@@ -16,8 +16,8 @@ namespace SubastaMaestra.Data.Interfaces
         Task<AuctionDTO> GetAuctionByIdAsync(int id);
         Task<List<AuctionDTO>> GetAllOpenAuctionAsync();
         Task<List<Auction>> GetAllClosedAuctionAsync();
-        Task<List<Auction>> ObtenerSubastasCerradasConProductos();
-        Task<List<Auction>> ObtenerTodasSubastas();
+        Task<List<Auction>> GetAllClosedAuctionWithProductsAsync();
+        Task<List<Auction>> GetAllAuctionsAsync();
 
 
 

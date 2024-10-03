@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using AutoMapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SubastaMaestra.Data.Interfaces;
@@ -17,32 +18,35 @@ namespace SubastaMaestra.Data.Implements
     public class ProductRepository : IProductRepository
     {
         private readonly SubastaContext _context;
-        
+        private readonly IMapper _mapper;
 
-        public ProductRepository(SubastaContext context)
+        public ProductRepository(SubastaContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // Crear un nuevo producto
         public async Task<int> CreateProductAsync(ProductCreateDTO productCreateDTO)
         {
-            var product = new Product{
-                Name = productCreateDTO.Name,
-                AuctionId = productCreateDTO.AuctionId,
-                CreatedAt = DateTime.UtcNow,
-                Condition = productCreateDTO.Condition,
-                InitialPrice = productCreateDTO.InitialPrice,
-                ImgUrl = productCreateDTO.ImgUrl,
-                Description = productCreateDTO.Description,
-                DeliveryCondition = productCreateDTO.DeliveryCondition,
-                SellerId = productCreateDTO.SellerId,   
-                FinalPrice = 0, // por defecto  
-                CurrentState = ProductState.Pending, // pendiente
-                NumberOfOffers = 0,
-                CategoryId = productCreateDTO.CategoryId,
+            //var product = new Product{
+            //    Name = productCreateDTO.Name,
+            //    AuctionId = productCreateDTO.AuctionId,
+            //    CreatedAt = DateTime.UtcNow,
+            //    Condition = productCreateDTO.Condition,
+            //    InitialPrice = productCreateDTO.InitialPrice,
+            //    ImgUrl = productCreateDTO.ImgUrl,
+            //    Description = productCreateDTO.Description,
+            //    DeliveryCondition = productCreateDTO.DeliveryCondition,
+            //    SellerId = productCreateDTO.SellerId,   
+            //    FinalPrice = 0, // por defecto  
+            //    CurrentState = ProductState.Pending, // pendiente
+            //    NumberOfOffers = 0,
+            //    CategoryId = productCreateDTO.CategoryId,
                // PaymentMethod = productCreateDTO.PaymentMethod
-            };
+
+            //};
+            var product = _mapper.Map<Product>(productCreateDTO);
             try
             {
                 await _context.Products.AddAsync(product);
@@ -96,7 +100,7 @@ namespace SubastaMaestra.Data.Implements
         }
 
         // Obtener todos los productos
-        public async Task<List<Product>> GetAllProductsAsync()
+        public async Task<List<ProductDTO>> GetAllProductsAsync()
         {
             try
             {
@@ -105,16 +109,23 @@ namespace SubastaMaestra.Data.Implements
                                      .Include(p => p.Seller)
                                      .Include(p => p.Auction)
                                      .ToListAsync();
+
                 if (productos == null)
                 {
-                    return new List<Product>();
+                    return new List<ProductDTO>();
 
                 }
-                return productos;
+                var productsDTO = new List<ProductDTO>();
+                foreach (var p in productos)
+                {
+                    productsDTO.Add(_mapper.Map<ProductDTO>(p));
+                }
+                
+                return productsDTO;
             }
             catch (Exception ex)
             {
-                return new List<Product>();
+                return new List<ProductDTO>();
             }
         }
 

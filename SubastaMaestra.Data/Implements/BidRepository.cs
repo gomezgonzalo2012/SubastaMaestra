@@ -19,6 +19,8 @@ namespace SubastaMaestra.Data.Implements
 
         public async Task<int> RealizarOferta(Bid oferta)
         {
+            // validar que el producto este activo y no vendido
+            // validar que no se pueda ofermar menos del minimo
             try
             {
                 await _context.Bids.AddAsync(oferta);

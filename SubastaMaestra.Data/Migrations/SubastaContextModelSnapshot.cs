@@ -47,7 +47,7 @@ namespace SubastaMaestra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Auctions");
+                    b.ToTable("Auctions", (string)null);
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.Bid", b =>
@@ -72,7 +72,7 @@ namespace SubastaMaestra.Data.Migrations
 
                     b.HasIndex("BidderId");
 
-                    b.ToTable("Bids");
+                    b.ToTable("Bids", (string)null);
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.Product", b =>
@@ -139,7 +139,7 @@ namespace SubastaMaestra.Data.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.ProductCategory", b =>
@@ -159,7 +159,7 @@ namespace SubastaMaestra.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("ProductCategories");
+                    b.ToTable("ProductCategories", (string)null);
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.User", b =>
@@ -211,7 +211,7 @@ namespace SubastaMaestra.Data.Migrations
                     b.HasIndex("Email", "DocumentNumber")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.UserRol", b =>
@@ -228,7 +228,7 @@ namespace SubastaMaestra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.Bid", b =>

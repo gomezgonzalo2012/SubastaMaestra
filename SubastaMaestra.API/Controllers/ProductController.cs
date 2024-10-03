@@ -24,8 +24,7 @@ namespace SubastaMaestra.API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
-
+                return BadRequest("Modelo invalido: " + ModelState);
             }
             //var product = mapper.Map<Product>(productDTO);
             var result = await _productRepository.CreateProductAsync(productDTO);
@@ -33,7 +32,7 @@ namespace SubastaMaestra.API.Controllers
             {
                 return BadRequest("No se pudo crear el producto");
             }
-            return Ok();
+            return Ok(); 
         }
 
         [HttpGet("{id:int}")]
@@ -57,7 +56,7 @@ namespace SubastaMaestra.API.Controllers
             {
                 return NotFound();
             }
-            var productsDTO = mapper.Map<List<ProductCreateDTO>>(productos);
+           // var productsDTO = mapper.Map<List<ProductCreateDTO>>(productos);
             return Ok(productos);
         }
         [HttpGet("activos")]

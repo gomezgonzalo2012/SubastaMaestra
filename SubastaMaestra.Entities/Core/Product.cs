@@ -15,8 +15,8 @@ namespace SubastaMaestra.Entities.Core
         public string Name { get; set; }
         public ProductConditions? Condition { get; set; } // condicion
         [Required]
-        public float InitialPrice { get; set; } 
-        public float? FinalPrice { get; set; } 
+        public float InitialPrice { get; set; }
+        public float? FinalPrice { get; set; } = 0;
         public string? ImgUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         [Required]

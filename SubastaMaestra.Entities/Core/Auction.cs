@@ -15,6 +15,6 @@ namespace SubastaMaestra.Entities.Core
         public DateTime FinishDate { get; set; }
         public AuctionState CurrentState { get; set; } // proxima/pendiente, activa, finalizada, cancelada
         [JsonIgnore] 
-        public List<Product>? Products { get; set; }
+        public List<Product>? Products { get; set; } = new List<Product>();
     }
 }

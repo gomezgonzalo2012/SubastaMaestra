@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Data.SubastaMaestra.Data;
@@ -19,10 +20,12 @@ namespace SubastaMaestra.Data.Implements
     public class AuctionRepository : IAuctionRepository
     {
         private readonly SubastaContext _context;
+        private readonly IMapper _mapper;
 
-        public AuctionRepository(SubastaContext context)
+        public AuctionRepository(SubastaContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // Crear una nueva subasta
@@ -30,14 +33,15 @@ namespace SubastaMaestra.Data.Implements
         {
             // impedir crear con fecha pasada
             // actualizar el estado
-            var auction = new Auction
-            {
-                Title = auctionCreateDTO.Title,
-                FinishDate = auctionCreateDTO.FinishDate,
-                StartDate = DateTime.UtcNow,
-                CurrentState = AuctionState.Pending // por defecto pendiente
+            //var auction = new Auction
+            //{
+            //    Title = auctionCreateDTO.Title,
+            //    FinishDate = auctionCreateDTO.FinishDate,
+            //    StartDate = DateTime.UtcNow,
+            //    CurrentState = AuctionState.Pending // por defecto pendiente
 
-            };
+            //};
+            var auction = _mapper.Map<Auction>(auctionCreateDTO);
             try
             {
                 
@@ -185,7 +189,7 @@ namespace SubastaMaestra.Data.Implements
         }
 
         // Obtener subastas cerradas junto con sus productos
-        public async Task<List<Auction>> ObtenerSubastasCerradasConProductos()
+        public async Task<List<Auction>> GetAllClosedAuctionWithProductsAsync()
         {
             try
             {
@@ -201,15 +205,18 @@ namespace SubastaMaestra.Data.Implements
         }
 
         // Obtener todas las subastas
-        public async Task<List<Auction>> ObtenerTodasSubastas()
+        public async Task<List<Auction>> GetAllAuctionsAsync()
         {
             try
             {
-                ActualizarEstadoSubastas(); // cada que se consulta las subastas
+                // cada que se consulta las subastas
+                ActualizarEstadoSubastas();
 
-                return await _context.Auctions
+                var auctions = await _context.Auctions
                                      .Include(s => s.Products)   // Incluir productos asociados
                                      .ToListAsync();
+                
+                return auctions;
             }
             catch (Exception ex)
             {
@@ -219,14 +226,23 @@ namespace SubastaMaestra.Data.Implements
 
         public async void ActualizarEstadoSubastas()
         {
-            var subastasParaCerrar = await _context.Auctions
+            var toCloseAuctions =  await _context.Auctions
                     .Where(s => s.CurrentState == AuctionState.Active && s.FinishDate <= DateTime.UtcNow)
                     .ToListAsync();
 
-            foreach (var subasta in subastasParaCerrar)
+            foreach (var subasta in toCloseAuctions)
             {
                 subasta.CurrentState = AuctionState.Closed;  // Cerrar subasta
                 //subasta.FinishDate = DateTime.UtcNow;
+                if (subasta.Products.Count()>0)
+                {
+                    foreach (var producto in subasta.Products)// desabilito los productos 
+                    {
+                        producto.CurrentState= ProductState.Disabled;
+                    }
+                }
+                
+                
             }
 
             await _context.SaveChangesAsync();

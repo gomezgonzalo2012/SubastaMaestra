@@ -12,7 +12,7 @@ namespace SubastaMaestra.Data.Interfaces
     {
         Task<int> CreateProductAsync(ProductCreateDTO producto);
         Task<ProductDTO> GetProductByIdAsync(int id);
-        Task<List<Product>> GetAllProductsAsync();
+        Task<List<ProductDTO>> GetAllProductsAsync();
         //Visualizar todos los productos en venta
         Task<List<Product>> GetActiveProductsAsync();
 
