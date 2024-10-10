@@ -13,11 +13,12 @@ namespace SubastaMaestra.Models.DTOs.Auction
 {
     public class AuctionDTO
     {
+        public int Id { get; set; }
         public string? Title { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime FinishDate { get; set; }
         public AuctionState State { get; set; } // 0 inactivo, 1 habilitado, 2 deshabilitado
-        [JsonIgnore]
+        
         public List<ProductDTO>? Products { get; set; } = new List<ProductDTO>();
     }
 }

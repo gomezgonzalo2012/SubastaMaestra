@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Models.DTOs.Auction;
+using SubastaMaestra.Models.DTOs.Bid;
 using SubastaMaestra.Models.DTOs.Product;
+using SubastaMaestra.Models.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +29,12 @@ namespace SubastaMaestra.Models.Utils
             CreateMap<Auction,AuctionDTO>()
                 .ReverseMap();
             CreateMap<AuctionCreateDTO, Auction>();
+
+            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<UserCreateDTO, User>();
+
+            CreateMap<Bid, BidDTO>().ReverseMap();
+            CreateMap<BidCreateDTO, Bid>();
 
         }
 

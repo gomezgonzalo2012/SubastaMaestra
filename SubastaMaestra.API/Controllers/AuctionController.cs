@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SubastaMaestra.Data.Interfaces;
+using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Models.DTOs.Auction;
 
 namespace SubastaMaestra.API.Controllers
@@ -22,7 +23,7 @@ namespace SubastaMaestra.API.Controllers
             if (!ModelState.IsValid) {
                 return BadRequest("Modelo invalido: "+ModelState);
             }
-            if (auctionDTO.StartDate < DateTime.UtcNow) // validacion de fecha de inicio < fecha actual
+            if (auctionDTO.StartDate < DateTime.Now) // validacion de fecha de inicio < fecha actual
             {
                 return BadRequest(new
                 {
@@ -30,7 +31,7 @@ namespace SubastaMaestra.API.Controllers
                     ErrorCode = "InvalidStartDate"
                 });
             }
-            if (auctionDTO.FinishDate < auctionDTO.StartDate) // validacion fecha fin > fecha inicio
+            if (auctionDTO.FinishDate <= auctionDTO.StartDate) // validacion fecha fin > fecha inicio
             {
                 return BadRequest(new
                 {
@@ -38,27 +39,53 @@ namespace SubastaMaestra.API.Controllers
                     ErrorCode = "InvalidStartDate"
                 });
             }
-            var result = await _auctionRepository.CreateAuctionAsync(auctionDTO);
-            if (result == 1)
+            if (auctionDTO.StartDate.Date < DateTime.Now.AddDays(3))
             {
-                return Ok("Subasta creada correctamente");
+                return BadRequest(new
+                {
+                    Message = "La subasta debe terner almenos 3 días de antelación para inciar.",
+                    ErrorCode = "InvalidStartDate"
+                });
+            }
+            var result = await _auctionRepository.CreateAuctionAsync(auctionDTO);
+            if (result.Success)
+            {
+                return Ok(result.Message);
 
             }
             return BadRequest("No se pudo crear la subasta");
 
         }
 
-        [HttpGet("open-auctions")]
-        public async Task<ActionResult<List<AuctionDTO>>> GetAllOpenAuctions()
+        [HttpGet("listOpen")]
+        public async Task<ActionResult> GetAllOpenAuctions()
         {
-            return  await _auctionRepository.GetAllOpenAuctionAsync();   
-        }
+            var result=   await _auctionRepository.GetAllOpenAuctionAsync();
+            if (result.Success)
+            {
+                return Ok(result);
 
+            }
+            return BadRequest(result);
+        }
+        [HttpGet("list")]
+        public async Task<ActionResult> GetAllAuctionAsync()
+        {
+            var result = await _auctionRepository.GetAllAuctionsAsync();
+            return Ok(result);
+
+        }
         [HttpGet("{id:int}")]
 
-        public async Task<AuctionDTO> GetAuctionById(int id)
+        public async Task<IActionResult> GetAuctionById(int id)
         {
-            return await _auctionRepository.GetAuctionByIdAsync(id);
+            var result=  await _auctionRepository.GetAuctionByIdAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+
+            }
+            return BadRequest(result);
         }
 
     }

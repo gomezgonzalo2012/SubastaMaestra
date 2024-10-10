@@ -21,15 +21,21 @@ namespace SubastaMaestra.API.Controllers
 
         // crear un puja
 
-        //[HttpPost("create")]
-        //public async Task<ActionResult> CreateBid([FromBody] BidCreateDTO bidCreateDTO)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest("Modelo inválido: " + ModelState);
-        //    }
-            
-        //}
+        [HttpPost("create")]
+        public async Task<ActionResult> CreateBid(BidCreateDTO bidCreateDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Modelo inválido: " + ModelState);
+            }
+
+            var result = await _bidRepository.CreateBid(bidCreateDTO);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
 
     }
 }

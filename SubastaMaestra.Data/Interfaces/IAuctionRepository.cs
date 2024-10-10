@@ -1,5 +1,6 @@
 ﻿using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Models.DTOs.Auction;
+using SubastaMaestra.Models.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +11,14 @@ namespace SubastaMaestra.Data.Interfaces
 {
     public interface IAuctionRepository
     {
-        Task<int> CreateAuctionAsync(AuctionCreateDTO subasta);
-        Task<int> CloseAuctionAsync(int id_subasta);
-        Task<int> EditAuctionAsync(Auction subasta);
-        Task<AuctionDTO> GetAuctionByIdAsync(int id);
-        Task<List<AuctionDTO>> GetAllOpenAuctionAsync();
-        Task<List<Auction>> GetAllClosedAuctionAsync();
-        Task<List<Auction>> GetAllClosedAuctionWithProductsAsync();
-        Task<List<Auction>> GetAllAuctionsAsync();
+        Task<OperationResult<AuctionCreateDTO>> CreateAuctionAsync(AuctionCreateDTO subasta);
+        Task<OperationResult<int>> CloseAuctionAsync(int id_subasta);
+        Task<OperationResult<int>> EditAuctionAsync(AuctionDTO subasta, int id);
+        Task<OperationResult<AuctionDTO>> GetAuctionByIdAsync(int id);
+        Task<OperationResult<List<AuctionDTO>>> GetAllOpenAuctionAsync();
+        Task<OperationResult<List<AuctionDTO>>> GetAllClosedAuctionAsync();
+        Task<OperationResult<List<AuctionDTO>>> GetAllClosedAuctionWithProductsAsync();
+        Task<OperationResult<List<AuctionDTO>>> GetAllAuctionsAsync();
 
 
 

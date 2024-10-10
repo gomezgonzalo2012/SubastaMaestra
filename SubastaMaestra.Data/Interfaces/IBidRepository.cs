@@ -1,4 +1,6 @@
 ﻿using SubastaMaestra.Entities.Core;
+using SubastaMaestra.Models.DTOs.Bid;
+using SubastaMaestra.Models.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,8 @@ namespace SubastaMaestra.Data.Interfaces
 {
     public interface IBidRepository
     {
-        public Task<int> RealizarOferta(Bid oferta);
-        Task<List<Bid>> ObtenerOfertasPorProducto(int id_producto);
+        Task<OperationResult<BidCreateDTO>> CreateBid(BidCreateDTO bid);
+        Task<OperationResult<List<BidDTO>>> ObtenerOfertasPorProducto(int id_producto);
 
         
 

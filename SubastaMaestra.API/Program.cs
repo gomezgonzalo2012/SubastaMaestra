@@ -23,8 +23,23 @@ builder.Services.AddDbContext<SubastaContext>(options =>
     );
 builder.Services.AddTransient<DbSeeder>();
 builder.Services.AddScoped<IProductRepository,ProductRepository>();
+builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBidRepository, BidRepository>();
+
 
 builder.Services.AddHostedService<AuctionBackgroundService>();
+// agregamos cors
+builder.Services.AddCors(opciones =>
+{
+    opciones.AddPolicy("newPolicy", app =>
+    {
+        app.AllowAnyOrigin();
+        app.AllowAnyMethod();
+        app.AllowAnyHeader();
+        app.SetIsOriginAllowed(origin=>true); // 
+    });
+});
 
 var app = builder.Build();
 
@@ -53,6 +68,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("newPolicy");
 
 app.UseAuthorization();
 

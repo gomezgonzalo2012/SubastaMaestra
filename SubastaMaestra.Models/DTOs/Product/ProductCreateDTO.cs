@@ -16,6 +16,7 @@ namespace SubastaMaestra.Models.DTOs.Product
         public string Name { get; set; }
         public ProductConditions? Condition { get; set; } // condicion
         [Required]
+        [Range(0, float.MaxValue)]
         public float InitialPrice { get; set; }
 
         public string? ImgUrl { get; set; }

@@ -20,62 +20,65 @@ namespace SubastaMaestra.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProductCreateDTO>> CreateProducto([FromBody] ProductCreateDTO productDTO)
+        public async Task<ActionResult> CreateProducto([FromBody] ProductCreateDTO productDTO)
         {
+            
+
+
             if (!ModelState.IsValid)
             {
                 return BadRequest("Modelo invalido: " + ModelState);
             }
             //var product = mapper.Map<Product>(productDTO);
             var result = await _productRepository.CreateProductAsync(productDTO);
-            if (result == -1)
+            if (!result.Success)
             {
-                return BadRequest("No se pudo crear el producto");
+                return BadRequest(result.Message);
             }
-            return Ok(); 
+            return Ok(result.Message); 
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult> GetProductById(int id) {
              var product = await _productRepository.GetProductByIdAsync(id);
 
-            if (product == null)
+            if (product.Value == null)
             {
-                return NotFound();
+                return NotFound(product);
             }
             //var productDTO = mapper.Map<ProductDTO>(product);
             
             return Ok(product);
         }
-        [HttpGet("todos")]
+        [HttpGet("list")]
         public async Task<ActionResult<List<ProductDTO>>> GetAllProducts()
         {
             var productos = await _productRepository.GetAllProductsAsync();
             
-            if (productos == null)
+            if (productos.Value == null)
             {
-                return NotFound();
+                return NotFound(productos);
             }
            // var productsDTO = mapper.Map<List<ProductCreateDTO>>(productos);
-            return Ok(productos);
+            return Ok(productos.Value);
         }
         [HttpGet("activos")]
         public async Task<ActionResult> GetAllActiveProducts()
         {
             var products = await _productRepository.GetActiveProductsAsync();
-            if (products == null)
+            if (products.Value == null)
             {
-                return NotFound();
+                return NotFound(products);
             }
             return Ok(products);
         }
         [HttpGet("subasta/{id:int}")]
         public async Task<ActionResult> GetProductByBid(int id)
         {
-            var products = await _productRepository.GetProductsByBidAsync(id);
-            if (products == null)
+            var products = await _productRepository.GetProductsByAuctionAsync(id);
+            if (products.Value == null)
             {
-                return NotFound();
+                return NotFound(products);
             }
             return Ok(products);
         }
@@ -84,43 +87,31 @@ namespace SubastaMaestra.API.Controllers
         public async Task<ActionResult> DisableProduct(int id)
         {
             var result = await _productRepository.DisableProductAsync(id);
-            if (result == 0)
+            if (!result.Success)
             {
-                return NotFound();
+                return BadRequest(result.Message);
             }
-            else if (result == -1)
-            {
-                return BadRequest("No se puede efectuar la operación");
-            }
-            return Ok("Producto deshabilitado.");
+            return Ok("Producto Deshabilitado con éxito.");
         }
 
         [HttpPost("habilitar/{id:int}")]
         public async Task<ActionResult> EnableProducto(int id)
         {
             var result = await _productRepository.EnableProductAsync(id);
-            if (result == 0)
-            {
-                return NotFound();
-            }
-            else if (result == -1)
-            {
-                return BadRequest("No se puede efectuar la operación");
+            if (!result.Success)
+            { 
+                return BadRequest(result.Message);
             }
             return Ok("Producto Habilitado con éxito.");
         }
 
-        [HttpPut("edit")]
-        public async Task<ActionResult> EditProducto(Product product)
+        [HttpPut("edit/{id:int}")]
+        public async Task<ActionResult> EditProducto(ProductDTO product, int id)
         {
-            var result = await _productRepository.EditProductAsync(product);
-            if (result == 0)
+            var result = await _productRepository.EditProductAsync(product, id);
+            if (!result.Success)
             {
-                return NotFound();
-            }
-            else if (result == -1)
-            {
-                return BadRequest("No se puede efectuar la operación");
+                return BadRequest(result.Message);
             }
             return Ok("Producto modificado con éxito.");
         }
