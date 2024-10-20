@@ -22,7 +22,6 @@ namespace SubastaMaestra.Models.DTOs.User
         public string? Email { get; set; }
         [Required]
         public string? Password { get; set; }
-        public int RolId { get; set; }
         [Required]
         public PersonType? PersonType { get; set; } // Juridica o Fisica
     }

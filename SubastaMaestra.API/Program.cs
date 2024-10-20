@@ -6,6 +6,9 @@ using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Data.Seeders;
 using SubastaMaestra.Data.SubastaMaestra.Data;
 using SubastaMaestra.Models.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,21 +29,40 @@ builder.Services.AddScoped<IProductRepository,ProductRepository>();
 builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBidRepository, BidRepository>();
+// autenticacion por jwt
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
+            ValidateIssuer = false,
+            ValidateAudience= false,
+            ValidateLifetime = true
+        };
+    });
 
 
 builder.Services.AddHostedService<AuctionBackgroundService>();
 // agregamos cors
 builder.Services.AddCors(opciones =>
 {
-    opciones.AddPolicy("newPolicy", app =>
+    opciones.AddPolicy("AllowAll", builder =>
     {
-        app.AllowAnyOrigin();
-        app.AllowAnyMethod();
-        app.AllowAnyHeader();
-        app.SetIsOriginAllowed(origin=>true); // 
+        builder.AllowAnyOrigin();
+        builder.AllowAnyMethod();
+        builder.AllowAnyHeader();
+        builder.SetIsOriginAllowed(origin=>true); // 
+        
     });
+    //opciones.AddPolicy("AllowSpecificOrigins", builder =>
+    //{
+    //    builder.WithOrigins("http://localhost:5157", "http://192.168.1.7:5083")
+    //    .AllowAnyHeader()
+    //    .AllowAnyMethod();
+    //});
 });
-
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -68,7 +90,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("newPolicy");
+app.UseCors("AllowAll");
+
+app.UseAuthentication(); // agregamos middleware de auth
 
 app.UseAuthorization();
 

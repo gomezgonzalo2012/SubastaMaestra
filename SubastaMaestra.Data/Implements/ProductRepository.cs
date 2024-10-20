@@ -30,7 +30,7 @@ namespace SubastaMaestra.Data.Implements
         // Crear un nuevo producto
         public async Task<OperationResult<ProductCreateDTO>> CreateProductAsync(ProductCreateDTO productCreateDTO)
         {
-            //metood de servicio
+            //metodo de servicio
             var auction = _context.Auctions.Where(a=>a.Id==productCreateDTO.AuctionId).FirstOrDefault();
             if (auction != null)
             {

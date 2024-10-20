@@ -21,6 +21,7 @@ namespace SubastaMaestra.Entities.Core
         [Required]
         public string? Password { get; set; }
         public State State { get; set; }
+        
         public UserRol Rol { get; set; }
         public int RolId { get; set; }
         [Required]

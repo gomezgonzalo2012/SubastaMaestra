@@ -21,10 +21,7 @@ namespace SubastaMaestra.API.Controllers
 
         [HttpPost]
         public async Task<ActionResult> CreateProducto([FromBody] ProductCreateDTO productDTO)
-        {
-            
-
-
+        {       
             if (!ModelState.IsValid)
             {
                 return BadRequest("Modelo invalido: " + ModelState);

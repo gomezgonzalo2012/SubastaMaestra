@@ -30,6 +30,11 @@ namespace SubastaMaestra.Data.Implements
                 return new OperationResult<int> { Success=false, Message="Email ya existe", Value =0};
             }
             User user = _mapper.Map<User>(userDTO);
+            user.RolId =  await _subastaContext.Roles
+                                    .Where(r => r.Name == "user")
+                                    .Select(r => r.Id)
+                                    .FirstOrDefaultAsync();
+
             try
             {
                 user.Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password);
@@ -51,18 +56,26 @@ namespace SubastaMaestra.Data.Implements
             return true;
         }
 
-        public async Task<OperationResult<int>> ValidateUserAsync(string email, string password)
+        public async Task<OperationResult<User>> ValidateUserAsync(UserDTO userdto)
         {
-            User user = await _subastaContext.Users.FirstOrDefaultAsync(u=>u.Email.Equals(email));
+            User user = await _subastaContext.Users.FirstOrDefaultAsync(u=>u.Email.Equals(userdto.Email));
             if (user != null)
             {
-                bool isValidPassword = BCrypt.Net.BCrypt.Verify( password, user.Password);
+                bool isValidPassword = BCrypt.Net.BCrypt.Verify( userdto.Password, user.Password);
                 if (isValidPassword)
                 {
-                    return new OperationResult<int> { Success = true, Message = "Inicio de sesión correcto" };
+                    return new OperationResult<User> { Success = true, Message = "Inicio de sesión correcto", Value = user };
                 }
             }
-            return new OperationResult<int> { Success = false, Message = "Email no registrado" };
+            return new OperationResult<User> { Success = false, Message = "Email no registrado"};
+        }
+
+        public async Task<User?> GetUser(UserDTO userDTO)
+        {
+            User user = await _subastaContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(userDTO.Email)&& userDTO.Password.Equals(userDTO.Password)) ;
+          
+            return user;
+
         }
     }
 }

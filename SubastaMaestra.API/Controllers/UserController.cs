@@ -27,20 +27,20 @@ namespace SubastaMaestra.API.Controllers
             {
                 return BadRequest(result);
             }
-            else
+            else 
             {
                 return Ok(result);
             }
         }
-        [HttpGet("validate")]
-        public async Task<ActionResult> ValidateUser(string email, string password)
-        {
-            var result = await _userRepository.ValidateUserAsync(email, password);
-            if (result.Success == true)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result );
-        }
+        //[HttpGet("validate")]
+        //public async Task<ActionResult> ValidateUser(string email, string password)
+        //{
+        //    ////var result = await _userRepository.ValidateUserAsync(email, password);
+        //    //if (result.Success == true)
+        //    //{
+        //    //    return Ok(result);
+        //    //}
+        //    //return BadRequest(result );
+        //}
     }
 }
