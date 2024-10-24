@@ -83,14 +83,16 @@ using (var scope = app.Services.CreateScope())
 
 
 // Configure the HTTP request pipeline.
+app.UseSwagger();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+app.UseStaticFiles();
 
 app.UseAuthentication(); // agregamos middleware de auth
 

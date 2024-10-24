@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Models.DTOs.Product;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 
 namespace SubastaMaestra.API.Controllers
 {
@@ -20,11 +23,21 @@ namespace SubastaMaestra.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> CreateProducto([FromBody] ProductCreateDTO productDTO)
         {       
+
             if (!ModelState.IsValid)
             {
                 return BadRequest("Modelo invalido: " + ModelState);
+            }
+
+            
+            if (!string.IsNullOrEmpty(productDTO.ImgUrl))
+            {
+                var imgUrl = await CreateImage(productDTO.ImgUrl);
+                productDTO.ImgUrl = imgUrl;
+
             }
             //var product = mapper.Map<Product>(productDTO);
             var result = await _productRepository.CreateProductAsync(productDTO);
@@ -112,5 +125,27 @@ namespace SubastaMaestra.API.Controllers
             }
             return Ok("Producto modificado con éxito.");
         }
+
+        
+
+        
+
+
+        private async Task<string> CreateImage(string imageBase64)
+        {
+            var cloudinary = new Cloudinary(new Account("gonza42742", "972699894989949", "9JkzTUratRqxT-AFTDfUL1yt4sQ"));
+
+            cloudinary.Api.Secure = true;
+
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(Guid.NewGuid().ToString(), new MemoryStream(Convert.FromBase64String(imageBase64)))
+            }; 
+
+            var response = await cloudinary.UploadAsync(uploadParams);
+            return response.SecureUrl.AbsoluteUri;
+        }
+
+
     }
 }

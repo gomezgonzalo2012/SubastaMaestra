@@ -126,7 +126,7 @@ namespace SubastaMaestra.Data.Implements
             }
             catch (Exception ex)
             {
-                return new OperationResult<List<AuctionDTO>> { Success = true, Message="Error al buscar las subastas" };
+                return new OperationResult<List<AuctionDTO>> { Success = false, Message="Error al buscar las subastas" };
 
             }
         }
