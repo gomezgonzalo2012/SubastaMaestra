@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SubastaMaestra.Data.Implements;
 using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Models.DTOs.Bid;
 
@@ -35,6 +36,18 @@ namespace SubastaMaestra.API.Controllers
                 return Ok(result);
             }
             return BadRequest(result);
+        }
+
+
+        [HttpGet("{id:int}/oferentes")]
+        public async Task<ActionResult> GetBiddersByProduct(int id)
+        {
+            var result = await _bidRepository.GetBiddersByProduct(id);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result);
         }
 
     }

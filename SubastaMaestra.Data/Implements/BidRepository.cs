@@ -4,6 +4,7 @@ using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Data.SubastaMaestra.Data;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Models.DTOs.Bid;
+using SubastaMaestra.Models.DTOs.User;
 using SubastaMaestra.Models.Utils;
 using System;
 using System.Collections.Generic;
@@ -40,8 +41,17 @@ namespace SubastaMaestra.Data.Implements
             {
                 return new OperationResult<BidCreateDTO> { Success = false, Message = "El monto debe superar el precio mínimo" };
             }
+            var algo = await GetBiddersByProduct(bidDTO.ProductId);
+            foreach (var bidder in algo.Value)
+            {
+                if (bidder.BidderId == bidDTO.BidderId)
+                {
+                    return new OperationResult<BidCreateDTO> { Success = false, Message = "El usuaro ya ofertó." };
+                }
+
+            }
             // Consulta LINQ para obtener la fecha de inicio de la subasta relacionada con el producto
-                var auctionFinish = _context.Products
+            var auctionFinish = _context.Products
                     .Where(p => p.Id == bidDTO.ProductId)                // Filtrar por el ID del producto
                         .Select(p => p.Auction.FinishDate)           // Navegar a la subasta y seleccionar la fecha de inicio
                             .FirstOrDefault();                            // Obtener el primer (y único) resultado o nulo si no existe
@@ -50,11 +60,13 @@ namespace SubastaMaestra.Data.Implements
                 return new OperationResult<BidCreateDTO> { Success = false, Message = "La subasta ya cerró." };
 
             }
+            
             var bid = _mapper.Map<Bid>(bidDTO);
             bid.OfferDate = DateTime.Now;
             bid.Price = (float)bidDTO.Amount;
             try
             {
+                product.NumberOfOffers++ ;
                 await _context.Bids.AddAsync(bid);
                 await _context.SaveChangesAsync();
                 return new OperationResult<BidCreateDTO> { Success = true, Message = "Oferta creada correctamente", Value= bidDTO };
@@ -66,6 +78,7 @@ namespace SubastaMaestra.Data.Implements
             }
         }
 
+        // obtener catidad de ofertas
         public async Task<OperationResult<List<BidDTO>>> ObtenerOfertasPorProducto(int id_producto)
         {
             try
@@ -88,7 +101,41 @@ namespace SubastaMaestra.Data.Implements
             }
         }
 
-       
+       // obtener oferentes por producto
+
+        public async Task<OperationResult<List<BidderDTO>>> GetBiddersByProduct(int id_product)
+        {
+            try
+            {
+                var bidder = await _context.Bids.Where(b => b.ProductId == id_product)
+                .Include(b => b.Bidder)
+                .Select(b => new BidderDTO
+                {
+                    BidderId = b.BidderId,
+                    Name = b.Bidder.Name,
+                    OfferDate = b.OfferDate,
+                    Price = b.Price,
+                    PaymentMethod = b.PaymentMethods
+                })
+                .OrderBy(b => b.OfferDate)
+                .ToListAsync();
+                if(bidder.Count==0)
+                {
+                    return new OperationResult<List<BidderDTO>> { Success = true, Message = "No hay oferentes por este producto" };
+
+                }
+                return new OperationResult<List<BidderDTO>> { Success = true, Value = bidder };
+
+            }
+            catch(Exception ex)
+            {
+                return new OperationResult<List<BidderDTO>> { Success = false, Message = ex.Message };
+            }
+            
+         }
+        
+        
+        
     }
 }
 

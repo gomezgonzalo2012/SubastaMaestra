@@ -126,11 +126,6 @@ namespace SubastaMaestra.API.Controllers
             return Ok("Producto modificado con éxito.");
         }
 
-        
-
-        
-
-
         private async Task<string> CreateImage(string imageBase64)
         {
             var cloudinary = new Cloudinary(new Account("gonza42742", "972699894989949", "9JkzTUratRqxT-AFTDfUL1yt4sQ"));
