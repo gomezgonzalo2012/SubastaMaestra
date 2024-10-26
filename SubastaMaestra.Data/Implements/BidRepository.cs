@@ -41,15 +41,20 @@ namespace SubastaMaestra.Data.Implements
             {
                 return new OperationResult<BidCreateDTO> { Success = false, Message = "El monto debe superar el precio mínimo" };
             }
-            var algo = await GetBiddersByProduct(bidDTO.ProductId);
-            foreach (var bidder in algo.Value)
+            var bidders = await GetBiddersByProduct(bidDTO.ProductId);
+            if(bidders.Value != null)
             {
-                if (bidder.BidderId == bidDTO.BidderId)
+                foreach (var bidder in bidders.Value)
                 {
-                    return new OperationResult<BidCreateDTO> { Success = false, Message = "El usuaro ya ofertó." };
+                    if (bidder.BidderId == bidDTO.BidderId)
+                    {
+                        return new OperationResult<BidCreateDTO> { Success = false, Message = "El usuaro ya ofertó." };
+                    }
+
                 }
 
             }
+            
             // Consulta LINQ para obtener la fecha de inicio de la subasta relacionada con el producto
             var auctionFinish = _context.Products
                     .Where(p => p.Id == bidDTO.ProductId)                // Filtrar por el ID del producto

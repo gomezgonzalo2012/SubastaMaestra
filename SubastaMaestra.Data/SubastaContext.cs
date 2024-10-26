@@ -19,6 +19,20 @@ namespace SubastaMaestra.Data
                       .HasKey(m => new { m.ProductId, m.BidderId });
 
                 // Configurar las relaciones de Producto con Usuario
+                modelBuilder.Entity<Sale>()
+                    .HasOne (s=>s.Buyer)
+                    .WithMany ()
+                    .HasForeignKey (s => s.BuyerId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
+
+                modelBuilder.Entity<Sale>()
+                    .HasOne(s => s.Product)
+                    .WithMany()
+                    .HasForeignKey(s => s.ProductId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
+
                 modelBuilder.Entity<Product>()
                     .HasOne(p => p.Seller)
                     .WithMany()  // Si no hay una colección de productos en Usuario, deja WithMany() vacío
@@ -70,6 +84,10 @@ namespace SubastaMaestra.Data
                     .HasIndex(u => new { u.Email, u.DocumentNumber})
                     .IsUnique();
 
+                modelBuilder.Entity<Sale>()
+                    .HasIndex(s => s.ProductId)
+                    .IsUnique();
+
                 // de enums a strings
 
                 modelBuilder.Entity<Product>()
@@ -85,6 +103,9 @@ namespace SubastaMaestra.Data
                 modelBuilder.Entity<Bid>()
                     .Property(p => p.PaymentMethods)
                     .HasConversion(new EnumToStringConverter<PaymentMethods>());
+                modelBuilder.Entity<Sale>()
+                   .Property(s => s.PaymentMethod)
+                   .HasConversion(new EnumToStringConverter<PaymentMethods>());
 
                 modelBuilder.Entity<Auction>()
                     .Property(p => p.CurrentState)
@@ -107,6 +128,7 @@ namespace SubastaMaestra.Data
             public DbSet<User> Users { get; set; }
             public DbSet<Bid> Bids { get; set; }
             public DbSet<UserRol> Roles { get; set; }
+            public DbSet<Sale> Sales { get; set; }
         }
     }
 

@@ -18,6 +18,7 @@ namespace SubastaMaestra.Models.DTOs.Auction
         public DateTime StartDate { get; set; }
         public DateTime FinishDate { get; set; }
         public AuctionState State { get; set; } // 0 inactivo, 1 habilitado, 2 deshabilitado
+
         
         public List<ProductDTO>? Products { get; set; } = new List<ProductDTO>();
     }

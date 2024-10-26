@@ -42,6 +42,7 @@ namespace SubastaMaestra.Data.Implements
                 }
             }
             var dbproduct = _mapper.Map<Product>(productCreateDTO);
+            dbproduct.CreatedAt = DateTime.Now;
             try
             {
                 await _context.Products.AddAsync(dbproduct);

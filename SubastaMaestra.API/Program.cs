@@ -5,10 +5,12 @@ using SubastaMaestra.Data.Implements;
 using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Data.Seeders;
 using SubastaMaestra.Data.SubastaMaestra.Data;
+using SubastaMaestra.Data;
 using SubastaMaestra.Models.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,11 @@ builder.Services.AddScoped<IProductRepository,ProductRepository>();
 builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBidRepository, BidRepository>();
+builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+// servicio que maneja estado de rproductos y subastas
+builder.Services.AddScoped<AuctionHandlerService>();
+
+//
 // autenticacion por jwt
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

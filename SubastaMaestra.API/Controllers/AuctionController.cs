@@ -12,7 +12,6 @@ namespace SubastaMaestra.API.Controllers
     public class AuctionController : ControllerBase
     {
         private readonly IAuctionRepository _auctionRepository;
-
         public AuctionController(IAuctionRepository auctionRepository)
         {
             _auctionRepository = auctionRepository;

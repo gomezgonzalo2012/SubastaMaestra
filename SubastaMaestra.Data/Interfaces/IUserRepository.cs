@@ -12,7 +12,7 @@ namespace SubastaMaestra.Data.Interfaces
     public interface IUserRepository
     {
         Task<OperationResult<int>> RegisterUserAsync(UserCreateDTO user);
-        Task<OperationResult<User>> ValidateUserAsync(UserDTO userdto);
-        Task<User?> GetUser(UserDTO userDTO);
+        Task<OperationResult<User>> ValidateUserAsync(LoginRequestDTO userdto);
+        //Task<User?> GetUser(UserDTO userDTO);
     }
 }

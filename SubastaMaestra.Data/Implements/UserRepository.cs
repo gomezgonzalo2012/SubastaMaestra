@@ -56,12 +56,12 @@ namespace SubastaMaestra.Data.Implements
             return true;
         }
 
-        public async Task<OperationResult<User>> ValidateUserAsync(UserDTO userdto)
+        public async Task<OperationResult<User>> ValidateUserAsync(LoginRequestDTO loginRequestDTO)
         {
-            User user = await _subastaContext.Users.FirstOrDefaultAsync(u=>u.Email.Equals(userdto.Email));
+            User user = await _subastaContext.Users.FirstOrDefaultAsync(u=>u.Email.Equals(loginRequestDTO.Email));
             if (user != null)
             {
-                bool isValidPassword = BCrypt.Net.BCrypt.Verify( userdto.Password, user.Password);
+                bool isValidPassword = BCrypt.Net.BCrypt.Verify(loginRequestDTO.Password, user.Password);
                 if (isValidPassword)
                 {
                     return new OperationResult<User> { Success = true, Message = "Inicio de sesión correcto", Value = user };
@@ -70,12 +70,12 @@ namespace SubastaMaestra.Data.Implements
             return new OperationResult<User> { Success = false, Message = "Email no registrado"};
         }
 
-        public async Task<User?> GetUser(UserDTO userDTO)
-        {
-            User user = await _subastaContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(userDTO.Email)&& userDTO.Password.Equals(userDTO.Password)) ;
+        //public async Task<User?> GetUser(UserDTO userDTO)
+        //{
+        //    User user = await _subastaContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(userDTO.Email)&& userDTO.Password.Equals(userDTO.Password)) ;
           
-            return user;
+        //    return user;
 
-        }
+        //}
     }
 }

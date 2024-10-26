@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SubastaMaestra.Data.SubastaMaestra.Data;
 
@@ -11,9 +12,11 @@ using SubastaMaestra.Data.SubastaMaestra.Data;
 namespace SubastaMaestra.Data.Migrations
 {
     [DbContext(typeof(SubastaContext))]
-    partial class SubastaContextModelSnapshot : ModelSnapshot
+    [Migration("20241024230750_AddSalesEntityWithRelations")]
+    partial class AddSalesEntityWithRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

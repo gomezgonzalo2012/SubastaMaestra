@@ -11,12 +11,10 @@ namespace SubastaMaestra.API.HostedServices
     {
         private Timer _timer;
         private readonly IServiceProvider _serviceProvider;
-        private readonly string logFilePath = "C:\\Users\\gomez\\source\\repos\\Metodologia"; // Ruta del archivo en el servidor
-        private readonly ILogger<AuctionBackgroundService> _logger;
+        
         public AuctionBackgroundService(IServiceProvider serviceProvider, ILogger<AuctionBackgroundService> logger)
         {
             _serviceProvider = serviceProvider;
-            _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Data.SubastaMaestra.Data;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Entities.Enums;
-using SubastaMaestra.Models.DTOs;
 using SubastaMaestra.Models.DTOs.Auction;
 using SubastaMaestra.Models.DTOs.Product;
 using SubastaMaestra.Models.Utils;
@@ -22,11 +20,12 @@ namespace SubastaMaestra.Data.Implements
     {
         private readonly SubastaContext _context;
         private readonly IMapper _mapper;
-
-        public AuctionRepository(SubastaContext context, IMapper mapper)
+        private readonly AuctionHandlerService _auctionHandlerService;
+        public AuctionRepository(SubastaContext context, IMapper mapper, AuctionHandlerService auctionHandlerService)
         {
             _context = context;
             _mapper = mapper;
+            _auctionHandlerService = auctionHandlerService;
         }
 
         // Crear una nueva subasta
@@ -134,11 +133,15 @@ namespace SubastaMaestra.Data.Implements
         // Obtener subastas abiertas (Estado = 1)
         public async Task<OperationResult<List<AuctionDTO>>> GetAllOpenAuctionAsync()
         {
+            await _auctionHandlerService.ProcessAuctions(); // acutaliza los estados
+
             try
             {
                 var today = DateTime.Now;
                 var auctions = await _context.Auctions
                                      .Where(s => s.CurrentState == AuctionState.Active && s.FinishDate> today )  // subasta habilitada o abierta
+                                     .Include(s => s.Products)
+                                     .ThenInclude(p => p.Seller)
                                      .ToListAsync();
                 if( auctions.Count == 0)
                 {
@@ -146,18 +149,22 @@ namespace SubastaMaestra.Data.Implements
 
                 }
 
-                var auctionsDTO = new List<AuctionDTO>();
-                foreach(var item in auctions)
+                List<AuctionDTO> auctionsDTO = new List<AuctionDTO>();
+                foreach (var auction in auctions)
                 {
-                    auctionsDTO.Add(new AuctionDTO
-                    {
-                        Title = item.Title,
-                        FinishDate = item.FinishDate,
-                        StartDate = item.StartDate,
-                        State = item.CurrentState,
-                        Id = item.Id
-                        
-                    });
+                    var auc = _mapper.Map<AuctionDTO>(auction);
+                    auc.State = auction.CurrentState; // falla el automaper
+                    //if( auction.Products.Any())
+                    //{
+                    //    foreach (var p in auc.Products)
+                    //    {
+                    //        var productDTO = _mapper.Map<ProductDTO>(p);
+                    //        auc.Products.Add(productDTO);
+
+                    //    }
+                    //}
+                    auctionsDTO.Add(auc);
+
                 }
                 return new OperationResult<List<AuctionDTO>> { Success = true, Value = auctionsDTO };
 
