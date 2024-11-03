@@ -22,6 +22,7 @@ namespace SubastaMaestra.Models.DTOs.Product
         public string? ImgUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? Description { get; set; }
+        public ProductState CurrentState { get; set; }
         public int NumberOfOffers { get; set; }
         public int CategoryId { get; set; }
         public int SellerId { get; set; }

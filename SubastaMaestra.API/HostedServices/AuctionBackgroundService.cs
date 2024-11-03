@@ -96,11 +96,7 @@ namespace SubastaMaestra.API.HostedServices
                 if (products.Count>0) // activar si tiene productos
                 {
                     auction.CurrentState = AuctionState.Active;
-                    // activar productos
-                    foreach (var p in products)
-                    {
-                        p.CurrentState = ProductState.Active;
-                    }
+                    
                 }else
                 {
                     auction.CurrentState = AuctionState.Canceled;  // nuevo estado "WaitingForProduct"

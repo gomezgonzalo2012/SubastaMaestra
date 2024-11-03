@@ -97,11 +97,11 @@ namespace SubastaMaestra.Data
                 if (products.Count > 0) // activar si tiene productos
                 {
                     auction.CurrentState = AuctionState.Active;
-                    // activar productos
-                    foreach (var p in products)
-                    {
-                        p.CurrentState = ProductState.Active;
-                    }
+                    // activar productos // SE DEBEN ACTIVAR MANUALMENTE
+                    //foreach (var p in products)
+                    //{
+                    //    p.CurrentState = ProductState.Active;
+                    //}
                 }
                 else
                 {

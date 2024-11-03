@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Entities.Core;
+using SubastaMaestra.Entities.Enums;
 using SubastaMaestra.Models.DTOs.Auction;
 
 namespace SubastaMaestra.API.Controllers
@@ -64,6 +65,22 @@ namespace SubastaMaestra.API.Controllers
             if (result.Success)
             {
                 return Ok(result);
+
+            }
+            return BadRequest(result);
+        }
+        [HttpGet("listByState/{estado}")]
+        public async Task<ActionResult> GetAllAuctionsByCurrentState(string estado)
+        {
+            var state = Enum.Parse< AuctionState>(estado, true);
+            var result = await _auctionRepository.GetAllAuctionByCurrentStateAsync(state);
+            if (result.Success )
+            {
+                return Ok(result);
+
+            }else if (result.Value.Count == 0)
+            {
+                return NotFound(result);
 
             }
             return BadRequest(result);

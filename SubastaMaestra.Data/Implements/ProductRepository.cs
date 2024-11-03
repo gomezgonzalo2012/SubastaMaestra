@@ -76,30 +76,33 @@ namespace SubastaMaestra.Data.Implements
                                      .Include(p => p.Seller)
                                      .Include(p => p.Auction)
                                      .FirstOrDefaultAsync(p => p.Id == id);
+                //var buyer = await _context.Users.Where(u=>u.Id == product.BuyerId).FirstOrDefaultAsync();
                 if (product == null) {
                     return new OperationResult<ProductDTO> { Success=false, Message= "Producto no encontrado."};
                 }
-                var productDTO = new ProductDTO
-                {
-                    AuctionId = product.AuctionId,
-                    Name = product.Name,
-                    CategoryId = (int)product.CategoryId,
-                    SellerId = product.SellerId,
-                    CreatedAt = product.CreatedAt,
-                    Condition = product.Condition,
-                    DeliveryCondition = product.DeliveryCondition,
-                    Description = product.Description,
-                    FinalPrice = product.FinalPrice,
-                    ImgUrl = product.ImgUrl,
-                    InitialPrice = product.InitialPrice,
-                    NumberOfOffers = product.NumberOfOffers,
-                    BuyerName = product.Buyer.Name,
-                    BuyerId = product.Buyer.Id,
-                    SellerName = product.Seller.Name,
-                    Id = product.Id,
+                var productDTO = _mapper.Map<ProductDTO>(product);
 
-                };
-                return new OperationResult<ProductDTO> { Success = false, Value= productDTO };
+                //var productDTO = new ProductDTO
+                //{
+                //    AuctionId = product.AuctionId,
+                //    Name = product.Name,
+                //    CategoryId = (int)product.CategoryId,
+                //    SellerId = product.SellerId,
+                //    CreatedAt = product.CreatedAt,
+                //    Condition = product.Condition,
+                //    DeliveryCondition = product.DeliveryCondition,
+                //    Description = product.Description,
+                //    FinalPrice = product.FinalPrice,
+                //    ImgUrl = product.ImgUrl,
+                //    InitialPrice = product.InitialPrice,
+                //    NumberOfOffers = product.NumberOfOffers,
+                //    BuyerName = product.Buyer.Name,
+                //    BuyerId = product.Buyer.Id,
+                //    SellerName = product.Seller.Name,
+                //    Id = product.Id,
+
+                //};
+                return new OperationResult<ProductDTO> { Success = true, Value= productDTO };
                         
             }
             catch (Exception ex)
@@ -137,7 +140,7 @@ namespace SubastaMaestra.Data.Implements
                 
                 return  new OperationResult<List<ProductDTO>>
                 {
-                    Success = false,
+                    Success = true,
                     Value = productsDTO
                 }; 
             }
@@ -207,6 +210,7 @@ namespace SubastaMaestra.Data.Implements
                                       .Where(p => p.AuctionId == id_subasta)
                                       .Include(p => p.Category)
                                       .Include(p => p.Seller)
+                                      .Include(p => p.Buyer)
                                       .ToListAsync();
 
                 if (products == null)

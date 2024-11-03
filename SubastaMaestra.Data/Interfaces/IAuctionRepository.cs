@@ -1,4 +1,5 @@
 ﻿using SubastaMaestra.Entities.Core;
+using SubastaMaestra.Entities.Enums;
 using SubastaMaestra.Models.DTOs.Auction;
 using SubastaMaestra.Models.Utils;
 using System;
@@ -15,10 +16,14 @@ namespace SubastaMaestra.Data.Interfaces
         Task<OperationResult<int>> CloseAuctionAsync(int id_subasta);
         Task<OperationResult<int>> EditAuctionAsync(AuctionDTO subasta, int id);
         Task<OperationResult<AuctionDTO>> GetAuctionByIdAsync(int id);
-        Task<OperationResult<List<AuctionDTO>>> GetAllOpenAuctionAsync();
-        Task<OperationResult<List<AuctionDTO>>> GetAllClosedAuctionAsync();
-        Task<OperationResult<List<AuctionDTO>>> GetAllClosedAuctionWithProductsAsync();
+        Task<OperationResult<List<AuctionDTO>>> GetAllOpenAuctionAsync(); // eliminar
+        Task<OperationResult<List<AuctionDTO>>> GetAllClosedAuctionAsync();// eliminar
+        Task<OperationResult<List<AuctionDTO>>> GetAllClosedAuctionWithProductsAsync(); // eliminar
         Task<OperationResult<List<AuctionDTO>>> GetAllAuctionsAsync();
+        Task<OperationResult<List<AuctionDTO>>> GetAllPendingAuctionsAsync(); // eliminar
+
+        Task<OperationResult<List<AuctionDTO>>> GetAllAuctionByCurrentStateAsync(AuctionState currentState);
+
 
 
 

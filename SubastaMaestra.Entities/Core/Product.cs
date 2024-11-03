@@ -27,7 +27,7 @@ namespace SubastaMaestra.Entities.Core
         public int? CategoryId { get; set; }
         public User Seller { get; set; }
         public int SellerId { get; set; }
-        public User Buyer { get; set; } // comprador puede ser nulo
+        public User? Buyer { get; set; } // comprador puede ser nulo
         public int? BuyerId { get; set; } 
         public Auction Auction { get; set; }
         public int AuctionId { get; set; } 

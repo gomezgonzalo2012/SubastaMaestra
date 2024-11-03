@@ -89,15 +89,23 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-// Configure the HTTP request pipeline.
-app.UseSwagger();
+//// Configure the HTTP request pipeline.
+//app.UseSwagger();
 
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment()) 
+//{
+//    app.UseSwaggerUI();
+//}
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
-    app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SubastaMaestra");
+    });
 }
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection();// DESCOMENTAR ANTES DE PUBLICAR
 app.UseCors("AllowAll");
 app.UseStaticFiles();
 
