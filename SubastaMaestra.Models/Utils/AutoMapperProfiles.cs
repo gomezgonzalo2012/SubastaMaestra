@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SubastaMaestra.Entities.Core;
+using SubastaMaestra.Models.DTOs;
 using SubastaMaestra.Models.DTOs.Auction;
 using SubastaMaestra.Models.DTOs.Bid;
 using SubastaMaestra.Models.DTOs.Product;
@@ -38,6 +39,9 @@ namespace SubastaMaestra.Models.Utils
 
             CreateMap<Bid, BidDTO>().ReverseMap();
             CreateMap<BidCreateDTO, Bid>();
+
+            CreateMap<Notification, NotificationDTO>().ReverseMap();
+
 
 
 

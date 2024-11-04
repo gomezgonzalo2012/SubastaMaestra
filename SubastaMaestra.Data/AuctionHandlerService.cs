@@ -1,16 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SubastaMaestra.Data.SubastaMaestra.Data;
+using SubastaMaestra.Data;
+using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Entities.Enums;
+using SubastaMaestra.Models.DTOs;
+using SubastaMaestra.Models.DTOs.Product;
 
 namespace SubastaMaestra.Data
 {
     public  class AuctionHandlerService
     {
         private  readonly SubastaContext _dbContext;
-        public AuctionHandlerService( SubastaContext dbContext)
+        private readonly INotificationRepository _notificationRepository;
+        public AuctionHandlerService( SubastaContext dbContext, INotificationRepository notificationRepository)
         {
             _dbContext = dbContext;
+            _notificationRepository = notificationRepository;
         }
         public async Task ProcessAuctions()
         {
@@ -65,10 +70,12 @@ namespace SubastaMaestra.Data
                         producto.CurrentState = ProductState.Sold;
                         producto.FinalPrice = producto.FinalPrice;
                         await SaleProductAsync(mejorOferta);
+
+                        await _notificationRepository.CreateNotification(producto.SellerId, producto.Id, NotificationType.SellerNotification);  // notif para vendedor
                     }
                     else
                     {
-                        producto.CurrentState = ProductState.Disabled; // Cambiar el estado del producto a Desactivado
+                        producto.CurrentState = ProductState.Disabled; 
 
                     }
                 }
@@ -93,19 +100,15 @@ namespace SubastaMaestra.Data
             foreach (var auction in pendingAuctions)
             {
                 //var hasProducts = localContext.Products.Any(p => p.AuctionId == auction.Id);
-                var products = await _dbContext.Products.Where(p => p.Id == auction.Id).ToListAsync();
+                var products = await _dbContext.Products.Where(p => p.AuctionId == auction.Id).ToListAsync();
                 if (products.Count > 0) // activar si tiene productos
                 {
                     auction.CurrentState = AuctionState.Active;
-                    // activar productos // SE DEBEN ACTIVAR MANUALMENTE
-                    //foreach (var p in products)
-                    //{
-                    //    p.CurrentState = ProductState.Active;
-                    //}
+                   
                 }
                 else
                 {
-                    auction.CurrentState = AuctionState.Canceled;  // nuevo estado "WaitingForProduct"
+                    auction.CurrentState = AuctionState.NoProducts;  
                 }
             }
             // Guardar cambios en la base de datos
@@ -127,6 +130,7 @@ namespace SubastaMaestra.Data
                 };
                 await _dbContext.Sales.AddAsync(newSale);
                 await _dbContext.SaveChangesAsync();
+                await _notificationRepository.CreateNotification(newSale.BuyerId, newSale.ProductId, NotificationType.BuyerNotification); // crear notificacion para comprador ganador
             }
             catch (Exception ex)
             {

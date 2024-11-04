@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SubastaMaestra.Data.SubastaMaestra.Data;
+using SubastaMaestra.Data;
 
 #nullable disable
 
@@ -73,6 +73,43 @@ namespace SubastaMaestra.Data.Migrations
                     b.HasIndex("BidderId");
 
                     b.ToTable("Bids");
+                });
+
+            modelBuilder.Entity("SubastaMaestra.Entities.Core.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_at")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("State")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.Product", b =>
@@ -286,6 +323,25 @@ namespace SubastaMaestra.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("SubastaMaestra.Entities.Core.Notification", b =>
+                {
+                    b.HasOne("SubastaMaestra.Entities.Core.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SubastaMaestra.Entities.Core.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SubastaMaestra.Entities.Core.Product", b =>
                 {
                     b.HasOne("SubastaMaestra.Entities.Core.Auction", "Auction")
@@ -356,6 +412,11 @@ namespace SubastaMaestra.Data.Migrations
             modelBuilder.Entity("SubastaMaestra.Entities.Core.ProductCategory", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("SubastaMaestra.Entities.Core.User", b =>
+                {
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

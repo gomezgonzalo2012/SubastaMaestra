@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SubastaMaestra.Data.Interfaces;
-using SubastaMaestra.Data.SubastaMaestra.Data;
+using SubastaMaestra.Data;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Entities.Enums;
 using SubastaMaestra.Models.DTOs.Product;
@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SubastaMaestra.Models.DTOs;
 
 namespace SubastaMaestra.Data.Implements
 {
@@ -21,11 +22,14 @@ namespace SubastaMaestra.Data.Implements
         private readonly SubastaContext _context;
 
         private readonly IMapper _mapper;
+        private readonly INotificationRepository _notificationRepository;
 
-        public ProductRepository(SubastaContext context, IMapper mapper)
+
+        public ProductRepository(SubastaContext context, IMapper mapper, INotificationRepository notificationRepository)
         {
             _context = context;
             _mapper = mapper;
+            _notificationRepository = notificationRepository;
         }
 
         // Crear un nuevo producto
@@ -82,39 +86,14 @@ namespace SubastaMaestra.Data.Implements
                 }
                 var productDTO = _mapper.Map<ProductDTO>(product);
 
-                //var productDTO = new ProductDTO
-                //{
-                //    AuctionId = product.AuctionId,
-                //    Name = product.Name,
-                //    CategoryId = (int)product.CategoryId,
-                //    SellerId = product.SellerId,
-                //    CreatedAt = product.CreatedAt,
-                //    Condition = product.Condition,
-                //    DeliveryCondition = product.DeliveryCondition,
-                //    Description = product.Description,
-                //    FinalPrice = product.FinalPrice,
-                //    ImgUrl = product.ImgUrl,
-                //    InitialPrice = product.InitialPrice,
-                //    NumberOfOffers = product.NumberOfOffers,
-                //    BuyerName = product.Buyer.Name,
-                //    BuyerId = product.Buyer.Id,
-                //    SellerName = product.Seller.Name,
-                //    Id = product.Id,
-
-                //};
                 return new OperationResult<ProductDTO> { Success = true, Value= productDTO };
                         
             }
             catch (Exception ex)
             {
-
-                return new OperationResult<ProductDTO> { Success = false, Message = "Error al buscar el producto" };
-
+               return new OperationResult<ProductDTO> { Success = false, Message = "Error al buscar el producto" };
             }
         }
-
-        
-
         // Obtener todos los productos
         public async Task<OperationResult<List<ProductDTO>>> GetAllProductsAsync()
         {
@@ -198,9 +177,6 @@ namespace SubastaMaestra.Data.Implements
 
             }
         }
-
-       
-
         // Obtener productos por subasta
     public async Task<OperationResult<List<ProductDTO>>> GetProductsByAuctionAsync(int id_subasta)
     {
@@ -260,6 +236,8 @@ namespace SubastaMaestra.Data.Implements
 
                 producto.CurrentState = ProductState.Disabled;  // 1 = habilitado
                 await _context.SaveChangesAsync();
+                // crear notificaion de producto habilitado
+                await _notificationRepository.CreateNotification(producto.SellerId, producto.Id, NotificationType.RejectedNotification);
                 return new OperationResult<int> { Success = true, Message = "Producto Deshabilidato" };
             }
             catch (Exception ex)
@@ -285,6 +263,9 @@ namespace SubastaMaestra.Data.Implements
                 }
                 producto.CurrentState = ProductState.Active;  // 1 = habilitado
                 await _context.SaveChangesAsync();
+                // crear notificaion de producto habilitado
+                await _notificationRepository.CreateNotification(producto.SellerId, producto.Id, NotificationType.AcceptedNotification);
+
                 return new OperationResult<int> { Success = true, Message = "Producto Habilidato" };
             }
             catch (Exception ex)

@@ -12,8 +12,10 @@ namespace SubastaMaestra.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        public UserController(IUserRepository userRepository) { 
+        private readonly INotificationRepository _notificationRepository;
+        public UserController(IUserRepository userRepository, INotificationRepository notifRepository) { 
             _userRepository = userRepository;
+            _notificationRepository = notifRepository;
         }
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] UserCreateDTO userCreateDTO)
@@ -32,6 +34,23 @@ namespace SubastaMaestra.API.Controllers
                 return Ok(result);
             }
         }
+        [HttpGet("/{userId:int}/notifications")]
+        public async Task<ActionResult> GetUserNotifications(int userId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Modelo invalido" + ModelState);
+            }
+            var result = await _notificationRepository.GetAllNotificationsByUserAsync(userId);
+
+            if (result.Success == false) {
+                return BadRequest(result);
+            }
+            return Ok(result);
+
+        }
+
+
         //[HttpGet("validate")]
         //public async Task<ActionResult> ValidateUser(string email, string password)
         //{

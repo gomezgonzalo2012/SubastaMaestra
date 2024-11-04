@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SubastaMaestra.Data.Interfaces;
-using SubastaMaestra.Data.SubastaMaestra.Data;
+using SubastaMaestra.Data;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Models.DTOs.User;
 using SubastaMaestra.Models.Utils;

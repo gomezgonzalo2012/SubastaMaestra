@@ -26,9 +26,7 @@ namespace SubastaMaestra.Entities.Core
         public int RolId { get; set; }
         [Required]
         public PersonType? PersonType { get; set; } // Juridica o Fisica
-
-
-
+        public List<Notification>? Notifications { get; set; } = new List<Notification>();
 
     }
 }

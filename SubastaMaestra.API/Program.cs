@@ -4,7 +4,7 @@ using SubastaMaestra.API.HostedServices;
 using SubastaMaestra.Data.Implements;
 using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Data.Seeders;
-using SubastaMaestra.Data.SubastaMaestra.Data;
+using SubastaMaestra.Data;
 using SubastaMaestra.Data;
 using SubastaMaestra.Models.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,6 +32,7 @@ builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBidRepository, BidRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificacionRepository>();
 // servicio que maneja estado de rproductos y subastas
 builder.Services.AddScoped<AuctionHandlerService>();
 

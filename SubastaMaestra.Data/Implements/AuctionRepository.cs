@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SubastaMaestra.Data.Interfaces;
-using SubastaMaestra.Data.SubastaMaestra.Data;
+using SubastaMaestra.Data;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Entities.Enums;
 using SubastaMaestra.Models.DTOs.Auction;

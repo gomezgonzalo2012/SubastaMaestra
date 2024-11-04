@@ -28,7 +28,8 @@ namespace SubastaMaestra.Entities.Enums
         Pending, // pendiente o proxima
         Active, 
         Closed,  // cerrada (llega a su fecha de cierre)
-        Canceled // cancelada
+        Canceled, // cancelada
+        NoProducts
     }
     public enum PaymentMethods
     {

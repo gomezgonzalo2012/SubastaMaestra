@@ -12,8 +12,8 @@ using SubastaMaestra.Data;
 namespace SubastaMaestra.Data.Migrations
 {
     [DbContext(typeof(SubastaContext))]
-    [Migration("20241002015806_AddinNewStatesToProductandAuction")]
-    partial class AddinNewStatesToProductandAuction
+    [Migration("20241103122729_AddNotifications")]
+    partial class AddNotifications
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,43 @@ namespace SubastaMaestra.Data.Migrations
                     b.HasIndex("BidderId");
 
                     b.ToTable("Bids");
+                });
+
+            modelBuilder.Entity("SubastaMaestra.Entities.Core.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_at")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("State")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.Product", b =>
@@ -163,6 +200,42 @@ namespace SubastaMaestra.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ProductCategories");
+                });
+
+            modelBuilder.Entity("SubastaMaestra.Entities.Core.Sale", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("real");
+
+                    b.Property<int>("BuyerId")
+                        .HasColumnType("int");
+
+                    b.Property<float?>("Deduccion")
+                        .HasColumnType("real");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SaleDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuyerId");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.ToTable("Sales");
                 });
 
             modelBuilder.Entity("SubastaMaestra.Entities.Core.User", b =>
@@ -253,6 +326,25 @@ namespace SubastaMaestra.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("SubastaMaestra.Entities.Core.Notification", b =>
+                {
+                    b.HasOne("SubastaMaestra.Entities.Core.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SubastaMaestra.Entities.Core.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SubastaMaestra.Entities.Core.Product", b =>
                 {
                     b.HasOne("SubastaMaestra.Entities.Core.Auction", "Auction")
@@ -285,6 +377,25 @@ namespace SubastaMaestra.Data.Migrations
                     b.Navigation("Seller");
                 });
 
+            modelBuilder.Entity("SubastaMaestra.Entities.Core.Sale", b =>
+                {
+                    b.HasOne("SubastaMaestra.Entities.Core.User", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SubastaMaestra.Entities.Core.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("SubastaMaestra.Entities.Core.User", b =>
                 {
                     b.HasOne("SubastaMaestra.Entities.Core.UserRol", "Rol")
@@ -304,6 +415,11 @@ namespace SubastaMaestra.Data.Migrations
             modelBuilder.Entity("SubastaMaestra.Entities.Core.ProductCategory", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("SubastaMaestra.Entities.Core.User", b =>
+                {
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }
