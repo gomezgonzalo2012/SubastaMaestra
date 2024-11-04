@@ -94,6 +94,35 @@ namespace SubastaMaestra.Data.Implements
                return new OperationResult<ProductDTO> { Success = false, Message = "Error al buscar el producto" };
             }
         }
+
+        // productos sin ofertas
+        public async Task<OperationResult<List<ProductDTO>>> GetProductsWithoutBids()
+        {
+            try
+            {
+                // Obtener productos sin ofertas
+                var productosSinOfertas = await _context.Products
+                    .Where(p => !_context.Bids.Any(b => b.ProductId == p.Id))
+                    .ToListAsync();
+
+                if (productosSinOfertas == null)
+                {
+                    return new OperationResult<List<ProductDTO>> { Success = false, Message = "Productos no encontrados." };
+                }
+                var productsDTO = new List<ProductDTO>();
+                foreach( var product in productosSinOfertas)
+                {
+                    productsDTO.Add(_mapper.Map<ProductDTO>(product));
+                }
+                return new OperationResult<List<ProductDTO>> { Success = true, Value = productsDTO };
+
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult<List<ProductDTO>>{ Success = false, Message = "Error al buscar los productos" };
+            }
+        }
+
         // Obtener todos los productos
         public async Task<OperationResult<List<ProductDTO>>> GetAllProductsAsync()
         {

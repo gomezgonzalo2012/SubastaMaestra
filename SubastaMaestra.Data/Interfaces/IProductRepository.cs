@@ -19,6 +19,7 @@ namespace SubastaMaestra.Data.Interfaces
 
         // ver productos innactivos
         // ver productos ppor subasta
+        Task<OperationResult<List<ProductDTO>>> GetProductsWithoutBids();
         Task<OperationResult<List<ProductDTO>>> GetProductsByAuctionAsync(int id_subasta);
         Task<OperationResult<int>> DisableProductAsync(int id);
         Task<OperationResult<int>> EnableProductAsync(int id); 

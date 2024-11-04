@@ -7,6 +7,7 @@ using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Models.DTOs.Product;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using SubastaMaestra.Models.Utils;
 
 namespace SubastaMaestra.API.Controllers
 {
@@ -72,6 +73,17 @@ namespace SubastaMaestra.API.Controllers
            // var productsDTO = mapper.Map<List<ProductCreateDTO>>(productos);
             return Ok(productos.Value);
         }
+        [HttpGet("sinOfertas")]
+        public async Task<ActionResult> GetProductsWithoutBids()
+        {
+            var products = await _productRepository.GetProductsWithoutBids();
+            if (products.Value == null)
+            {
+                return NotFound(products);
+            }
+            return Ok(products);
+        }
+
         [HttpGet("activos")]
         public async Task<ActionResult> GetAllActiveProducts()
         {

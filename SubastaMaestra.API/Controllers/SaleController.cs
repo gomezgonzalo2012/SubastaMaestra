@@ -24,6 +24,16 @@ namespace SubastaMaestra.API.Controllers
             }
             return BadRequest("Error al encontrar ventas");
         }
+        [HttpGet("/list/{id:int}")]
+        public async Task<ActionResult> GetAllSalesByAuction(int id)
+        {
+            var result = await _saleRepository.GetAllSalesAsync();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest("Error al encontrar ventas");
+        }
 
     }
 }
