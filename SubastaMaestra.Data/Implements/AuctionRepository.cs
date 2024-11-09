@@ -49,6 +49,32 @@ namespace SubastaMaestra.Data.Implements
                 return new OperationResult<AuctionCreateDTO> { Success = false, Message = "Error al crear la subasta" };
             }
         }
+        // activar subasta
+
+        public async Task<OperationResult<int>> ActivateAuctionAsync(int id_subasta)
+        {
+            try
+            {
+                var subasta = await _context.Auctions.FindAsync(id_subasta);
+                if (subasta == null)
+                {
+                    return new OperationResult<int> { Success = false, Message = "Subasta no encontrada", Value = -1 };
+                }
+
+                subasta.CurrentState = AuctionState.Active;  
+                // desactivar productos
+                var op = await _context.SaveChangesAsync();
+
+                return new OperationResult<int> { Success = true, Message = "Subasta activada correctamente", Value = 1 };
+
+
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult<int> { Success = false, Message = "Error al cerrar la subasta.", Value = -1 };
+
+            }
+        }
 
         // Cerrar una subasta (actualizar su estado)
         public async Task<OperationResult<int>> CloseAuctionAsync(int id_subasta)
@@ -79,13 +105,13 @@ namespace SubastaMaestra.Data.Implements
         }
 
         // Modificar una subasta existente
-        public async Task<OperationResult<int>> EditAuctionAsync(AuctionDTO subasta,int Id)
+        public async Task<OperationResult<int>> EditAuctionAsync(AuctionUpdateDTO subasta,int id)
         {
 
 
             try
             {
-                var subastaExistente = await _context.Auctions.FindAsync(subasta.Id);
+                var subastaExistente = await _context.Auctions.FindAsync(id);
                 if (subastaExistente == null)
                 {
                     return new OperationResult<int> { Success = false, Message = "Subasta no encontrada.", Value = 0 };

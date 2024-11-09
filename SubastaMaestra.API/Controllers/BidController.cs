@@ -39,7 +39,7 @@ namespace SubastaMaestra.API.Controllers
         }
 
 
-        [HttpGet("/product/{id:int}")]
+        [HttpGet("/product/{id:int}/oferentes")]
         public async Task<ActionResult> GetBiddersByProduct(int id)
         {
             var result = await _bidRepository.GetBiddersByProduct(id);
