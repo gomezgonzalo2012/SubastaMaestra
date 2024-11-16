@@ -27,6 +27,7 @@ namespace SubastaMaestra.Entities.Core
         [Required]
         public PersonType? PersonType { get; set; } // Juridica o Fisica
         public List<Notification>? Notifications { get; set; } = new List<Notification>();
+        public List<Bid>? Bids { get; set; } = new List<Bid>();
 
     }
 }

@@ -35,6 +35,6 @@ namespace SubastaMaestra.Entities.Core
 
 
         // agregar metodo de pago
-
+        public List<Bid> Bids { get; set; } = new List<Bid>();
     }
 }

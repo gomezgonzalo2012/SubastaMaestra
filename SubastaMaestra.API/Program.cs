@@ -33,8 +33,16 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBidRepository, BidRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificacionRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 // servicio que maneja estado de rproductos y subastas
 builder.Services.AddScoped<AuctionHandlerService>();
+// evita bucles de serializacion
+//builder.Services.AddControllers().AddJsonOptions(options =>
+//{
+//    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+//});
+
+
 
 //
 // autenticacion por jwt

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SubastaMaestra.Models.DTOs.Reports;
 
 namespace SubastaMaestra.Data.Implements
 {
@@ -132,6 +133,8 @@ namespace SubastaMaestra.Data.Implements
         // Obtener todas las subastas
         public async Task<OperationResult<List<AuctionDTO>>> GetAllAuctionsAsync()
         {
+            await _auctionHandlerService.ProcessAuctions(); // acutaliza los estados
+
             try
             {
                 // cada que se consulta las subastas
@@ -394,9 +397,46 @@ namespace SubastaMaestra.Data.Implements
             catch (Exception ex)
             {
                 return new OperationResult<List<AuctionDTO>> { Success = false, Message = "Error a buscar las subastas" };
-
             }
         }
+
+        public async Task<List<AuctionReportDTO>> ObtenerSubastasMasPopulares(DateTime inicio, DateTime fin)
+        {
+            // Obtener las subastas filtradas y calcular la cantidad de ofertas
+            var subastasMasPopulares = await _context.Auctions
+                .Where(a => a.CurrentState == AuctionState.Closed &&
+                            a.FinishDate >= inicio && a.FinishDate <= fin)
+                .Select(a => new
+                {
+                    a.Id,
+                    a.Title,
+                    a.FinishDate,
+                    // Calcular el total de ofertas sumando las ofertas de cada producto
+                    TotalOfertas = a.Products.SelectMany(p => p.Bids).Count(),
+                    // Calcular el monto máximo de todas las ofertas de los productos
+                    HighestBidAmount = a.Products
+                        .SelectMany(p => p.Bids)
+                        .Max(b => (decimal?)b.Price) // Usar (decimal?) para manejar subastas sin ofertas
+                        ?? 0 // Si no hay ofertas, el monto máximo será 0
+                })
+                .OrderByDescending(a => a.TotalOfertas) // Ordenar por cantidad de ofertas
+                .Take(15) // Tomar las 15 subastas con mayor cantidad de ofertas
+                .ToListAsync();
+
+            // Transformar a DTO para la salida
+            return subastasMasPopulares.Select(a => new AuctionReportDTO
+            {
+                AuctionId = a.Id,
+                Title = a.Title,
+                FinishDate = a.FinishDate,
+                TotalOfertas = a.TotalOfertas,
+                HighestBidAmount = a.HighestBidAmount
+            }).ToList();
+        }
+
+
+
+
     }
 
 

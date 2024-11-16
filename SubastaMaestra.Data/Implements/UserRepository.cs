@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SubastaMaestra.Models.DTOs.Reports;
 
 namespace SubastaMaestra.Data.Implements
 {
@@ -70,12 +71,54 @@ namespace SubastaMaestra.Data.Implements
             return new OperationResult<User> { Success = false, Message = "Email no registrado"};
         }
 
-        //public async Task<User?> GetUser(UserDTO userDTO)
-        //{
-        //    User user = await _subastaContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(userDTO.Email)&& userDTO.Password.Equals(userDTO.Password)) ;
-          
-        //    return user;
+        public async Task<List<MostActiveUserDTO>> ObtenerUsuariosMasActivos()
+        {
 
-        //}
+            // Consulta en Entity Framework
+               var activeBidders = _subastaContext.Users
+                .Join(
+                    _subastaContext.Bids,           // Tabla a unir
+                    user => user.Id,          // Clave primaria (Users)
+                    bid => bid.BidderId,      // Clave foránea (Bids)
+                    (user, bid) => new        // Proyección intermedia
+                    {
+                        UserId = user.Id,
+                        UserName = user.Name,
+                        OfferDate = bid.OfferDate,
+                        Price = bid.Price,
+                        ProductId = bid.ProductId
+                    }
+                )
+                .GroupBy(
+                    x => new { x.UserId, x.UserName } // Agrupamos por UserId y UserName
+                )
+                .Where(g => g.Count() >= 1)          // Filtro similar a HAVING
+                .Select(g => new MostActiveUserDTO   // Proyección final hacia el DTO
+                {
+                    UserId = g.Key.UserId,
+                    UserName = g.Key.UserName,
+                    TotalBids = g.Count(),
+                    HighestBidAmount = g.Max(x => x.Price),
+                    HighestBidDate = g
+                        .Where(x => x.Price == g.Max(y => y.Price)) // Filtramos el bid más alto
+                        .Select(x => x.OfferDate)                   // Seleccionamos su fecha
+                        .FirstOrDefault(),                          // Obtenemos el primer valor
+                    ProductName = g
+                        .Where(x => x.Price == g.Max(y => y.Price)) // Filtramos el bid más alto
+                        .Join(
+                            _subastaContext.Products,      // Join con Products
+                            bid => bid.ProductId,    // Clave foránea en Bids
+                            product => product.Id,   // Clave primaria en Products
+                            (bid, product) => product.Name // Obtenemos el nombre del producto
+                        )
+                        .FirstOrDefault()            // Seleccionamos el nombre del producto
+                })
+                .OrderByDescending(x => x.TotalBids) // Ordenar por número de ofertas
+                .Take(15)                             // Top 15
+                .ToList();
+
+            return activeBidders;
+
+        }
     }
 }

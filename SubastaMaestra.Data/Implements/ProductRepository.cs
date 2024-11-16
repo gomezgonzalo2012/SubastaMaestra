@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SubastaMaestra.Models.DTOs;
+using SubastaMaestra.Models.DTOs.Reports;
 
 namespace SubastaMaestra.Data.Implements
 {
@@ -102,7 +103,7 @@ namespace SubastaMaestra.Data.Implements
             {
                 // Obtener productos sin ofertas
                 var productosSinOfertas = await _context.Products
-                    .Where(p => !_context.Bids.Any(b => b.ProductId == p.Id))
+                    .Where(p => !_context.Bids.Any(b => b.ProductId == p.Id) && p.CurrentState == ProductState.Disabled)
                     .ToListAsync();
 
                 if (productosSinOfertas == null)
@@ -327,6 +328,31 @@ namespace SubastaMaestra.Data.Implements
             }
         }
 
+        public async Task<OperationResult<List<ProductDTO>>> GetProductsBySeller(int seller_Id)
+        {
+            try
+            {
+                var products = await _context.Products.Where(p => p.SellerId == seller_Id).Include(p=>p.Auction).ToListAsync();
+                if(products.Count == 0 || products == null)
+                {
+                    return new OperationResult<List<ProductDTO>> { Success = true, Message = "Sin productos", Value = new List<ProductDTO>() };
+                }
+                var productsDTO = new List<ProductDTO>();
+                products.ForEach(p => productsDTO.Add(_mapper.Map<ProductDTO>(p)));
+                //foreach (var product in products)
+                //{
+                //    var p = _mapper.Map<ProductDTO>(product);
+                //    productsDTO.Add(p);
+                //}
+                    
+                 return new OperationResult<List<ProductDTO>> { Success = true, Value = productsDTO };
+                
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult<List<ProductDTO>> { Success = true,Message=$"Error al recuperar productos {ex.Message}" ,Value = null };
 
+            }
+        }
     }
 }

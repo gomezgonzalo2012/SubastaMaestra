@@ -126,6 +126,15 @@ namespace SubastaMaestra.API.Controllers
             }
             return BadRequest(result);
         }
-
+        [HttpGet("masPopulares")]
+        public async Task<IActionResult> GetMostPopularAucions(DateTime start, DateTime finish)
+        {
+            var result = await _auctionRepository.ObtenerSubastasMasPopulares(start, finish);
+            if (result!= null)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

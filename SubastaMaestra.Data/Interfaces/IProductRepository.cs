@@ -1,5 +1,6 @@
 ﻿using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Models.DTOs.Product;
+using SubastaMaestra.Models.DTOs.Reports;
 using SubastaMaestra.Models.Utils;
 using System;
 using System.Collections.Generic;
@@ -24,10 +25,11 @@ namespace SubastaMaestra.Data.Interfaces
         Task<OperationResult<int>> DisableProductAsync(int id);
         Task<OperationResult<int>> EnableProductAsync(int id); 
         Task<OperationResult<int>> EditProductAsync(ProductDTO product, int id);
+        Task<OperationResult<List<ProductDTO>>> GetProductsBySeller(int seller_id);
+        
 
 
-      
-       
+
 
 
 

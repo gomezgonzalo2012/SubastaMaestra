@@ -11,5 +11,6 @@ namespace SubastaMaestra.Data.Interfaces
     public interface ISaleRepository
     {
         Task<List<SaleDTO>> GetAllSalesAsync();
+
     }
 }

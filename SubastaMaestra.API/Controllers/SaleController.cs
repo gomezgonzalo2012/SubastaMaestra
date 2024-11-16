@@ -14,7 +14,7 @@ namespace SubastaMaestra.API.Controllers
             _saleRepository = saleRepository;
         }
 
-        [HttpGet("/list")]
+        [HttpGet("list")]
         public async Task<ActionResult> GetAllSales()
         {
             var result = await _saleRepository.GetAllSalesAsync();
@@ -24,16 +24,16 @@ namespace SubastaMaestra.API.Controllers
             }
             return BadRequest("Error al encontrar ventas");
         }
-        [HttpGet("/list/{id:int}")]
-        public async Task<ActionResult> GetAllSalesByAuction(int id)
-        {
-            var result = await _saleRepository.GetAllSalesAsync();
-            if (result != null)
-            {
-                return Ok(result);
-            }
-            return BadRequest("Error al encontrar ventas");
-        }
+        //[HttpGet("list/ByAuction/{id:int}")]
+        //public async Task<ActionResult> GetAllSalesByAuction(int id)
+        //{
+        //    var result = await _saleRepository.GetAllSalesAsync();
+        //    if (result != null)
+        //    {
+        //        return Ok(result);
+        //    }
+        //    return BadRequest("Error al encontrar ventas");
+        //}
 
     }
 }

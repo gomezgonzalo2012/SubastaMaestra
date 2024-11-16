@@ -47,13 +47,13 @@ using SubastaMaestra.Entities.Enums;
 
                 modelBuilder.Entity<Bid>() // relaciones pujas
                     .HasOne(p => p.Product)
-                    .WithMany()  // Si no hay una colección de productos en Usuario, deja WithMany() vacío
+                    .WithMany(p=> p.Bids)  // avegacion
                     .HasForeignKey(p => p.ProductId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 modelBuilder.Entity<Bid>()
                     .HasOne(p => p.Bidder)
-                    .WithMany()  // Si no hay una colección de productos en Usuario, deja WithMany() vacío
+                    .WithMany(u => u.Bids)  // navegacion
                     .HasForeignKey(p => p.BidderId)
                     .OnDelete(DeleteBehavior.Restrict);
 

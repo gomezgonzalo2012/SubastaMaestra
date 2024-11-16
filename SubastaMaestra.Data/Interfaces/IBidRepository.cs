@@ -16,6 +16,8 @@ namespace SubastaMaestra.Data.Interfaces
         Task<OperationResult<List<BidDTO>>> ObtenerOfertasPorProducto(int id_producto);
 
         Task<OperationResult<List<BidderDTO>>> GetBiddersByProduct(int id_product);
+        Task<OperationResult<List<BidDTO>>> GetBidsByUser(int bidder_id);
+
 
     }
 }

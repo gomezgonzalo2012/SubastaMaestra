@@ -1,6 +1,7 @@
 ﻿using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Entities.Enums;
 using SubastaMaestra.Models.DTOs.Auction;
+using SubastaMaestra.Models.DTOs.Reports;
 using SubastaMaestra.Models.Utils;
 using System;
 using System.Collections.Generic;
@@ -24,5 +25,7 @@ namespace SubastaMaestra.Data.Interfaces
         Task<OperationResult<List<AuctionDTO>>> GetAllPendingAuctionsAsync(); // eliminar
 
         Task<OperationResult<List<AuctionDTO>>> GetAllAuctionByCurrentStateAsync(AuctionState currentState);
+        // repote
+        Task<List<AuctionReportDTO>> ObtenerSubastasMasPopulares(DateTime inicio, DateTime fin);
     }
 }

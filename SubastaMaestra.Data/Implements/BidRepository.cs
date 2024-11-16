@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SubastaMaestra.Models.DTOs.Product;
+using SubastaMaestra.Models.DTOs.Auction;
 
 namespace SubastaMaestra.Data.Implements
 {
@@ -58,14 +60,25 @@ namespace SubastaMaestra.Data.Implements
             // Consulta LINQ para obtener la fecha de inicio de la subasta relacionada con el producto
             var auctionFinish = _context.Products
                     .Where(p => p.Id == bidDTO.ProductId)                // Filtrar por el ID del producto
-                        .Select(p => p.Auction.FinishDate)           // Navegar a la subasta y seleccionar la fecha de inicio
+                        .Select(p => new
+                        {
+                            Finish = p.Auction.FinishDate, // Seleccionar la fecha de finalización
+                            State = p.Auction.CurrentState // Seleccionar el estado actual
+                        })          // Navegar a la subasta y seleccionar la fecha de inicio
                             .FirstOrDefault();                            // Obtener el primer (y único) resultado o nulo si no existe
-            if (auctionFinish < DateTime.Now)
+            if (auctionFinish.Finish < DateTime.Now)
             {
                 return new OperationResult<BidCreateDTO> { Success = false, Message = "La subasta ya cerró." };
 
             }
-            
+
+            if (auctionFinish.State == Entities.Enums.AuctionState.Pending)
+            {
+                return new OperationResult<BidCreateDTO> { Success = false, Message = "La subasta aún no esta disponible para ofertar." };
+
+            }
+
+
             var bid = _mapper.Map<Bid>(bidDTO);
             bid.OfferDate = DateTime.Now;
             bid.Price = (float)bidDTO.Amount;
@@ -138,9 +151,36 @@ namespace SubastaMaestra.Data.Implements
             }
             
          }
-        
-        
-        
+
+        public async Task<OperationResult<List<BidDTO>>> GetBidsByUser(int bidder_id)
+        {
+            try
+            {
+                var bids = await _context.Bids.Where(b => b.BidderId == bidder_id)
+                    .Include(b => b.Bidder)
+                    .Include (b => b.Product)
+                    .ToListAsync();
+                if(bids.Count==0 || bids == null)
+                {
+                    return new OperationResult<List<BidDTO>> { Success = true, Message = "No hay ofertas",Value = new List<BidDTO>() };
+
+                }
+                var bidsDTO = new List<BidDTO>();
+                foreach (var bid in bids)
+                {
+                    var b = _mapper.Map<BidDTO>(bid);
+                    bidsDTO.Add(b);
+                }
+
+                return new OperationResult<List<BidDTO>> { Success = true, Value = bidsDTO };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult<List<BidDTO>> { Success = false, Message = ex.Message };
+            }
+
+        }
+
     }
 }
 
