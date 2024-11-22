@@ -27,5 +27,6 @@ namespace SubastaMaestra.Data.Interfaces
         Task<OperationResult<List<AuctionDTO>>> GetAllAuctionByCurrentStateAsync(AuctionState currentState);
         // repote
         Task<List<AuctionReportDTO>> ObtenerSubastasMasPopulares(DateTime inicio, DateTime fin);
+        Task<List<ProfitReportDTO>> GetProfitReport();
     }
 }

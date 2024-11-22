@@ -68,7 +68,7 @@ namespace SubastaMaestra.Data
                     {
                         producto.BuyerId = mejorOferta.BidderId; // Asignar el ganador del producto
                         producto.CurrentState = ProductState.Sold;
-                        producto.FinalPrice = producto.FinalPrice;
+                        producto.FinalPrice = mejorOferta.Price;
                         await SaleProductAsync(mejorOferta);
 
                         await _notificationRepository.CreateNotification(producto.SellerId, producto.Id, NotificationType.SellerNotification);  // notif para vendedor

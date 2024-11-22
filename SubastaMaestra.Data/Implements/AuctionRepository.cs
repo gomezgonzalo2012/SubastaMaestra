@@ -434,9 +434,25 @@ namespace SubastaMaestra.Data.Implements
             }).ToList();
         }
 
+        public async Task<List<ProfitReportDTO>> GetProfitReport()
+        {
+                    var subastasConVentas = await _context.Auctions
+            .Where(a => a.Products.Any(p => p.Sales.Any()) /*&& (a.FinishDate <= DateTime.Now && a.StartDate >= DateTime.Now.AddDays(-30))*/) // Filtrar subastas que tienen productos vendidos
+            .Select(subasta => new ProfitReportDTO
+            {
+                AuctionId = subasta.Id,
+                AuctionTitle = subasta.Title,
+                StartDate = subasta.StartDate,
+                FinishDate = subasta.FinishDate,
+                TotalProductosVendidos = subasta.Products.Where(p => p.Sales.Any()).Count(),
+                MontoTotalVentas = subasta.Products.SelectMany(p => p.Sales).Sum(s => (float?)s.Amount) ?? 0,
+                GananciaTotal = subasta.Products.SelectMany(p => p.Sales).Sum(s => (float?)s.Deduccion) ?? 0
+            })
+            .OrderByDescending(x => x.FinishDate) //ordenar por monto total de ventas
+            .ToListAsync();
 
-
-
+            return subastasConVentas;
+        }
     }
 
 

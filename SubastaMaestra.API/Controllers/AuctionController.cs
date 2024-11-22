@@ -5,6 +5,7 @@ using SubastaMaestra.Data.Interfaces;
 using SubastaMaestra.Entities.Core;
 using SubastaMaestra.Entities.Enums;
 using SubastaMaestra.Models.DTOs.Auction;
+using SubastaMaestra.Models.DTOs.Reports;
 using SubastaMaestra.Models.Utils;
 
 namespace SubastaMaestra.API.Controllers
@@ -135,6 +136,16 @@ namespace SubastaMaestra.API.Controllers
                 return Ok(result);
             }
             return BadRequest(result);
+        }
+        [HttpGet("reporteGanancias")]
+        public async Task<IActionResult> GetProfitReport()
+        {
+            var result = await _auctionRepository.GetProfitReport();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NoContent();
         }
     }
 }

@@ -36,5 +36,7 @@ namespace SubastaMaestra.Entities.Core
 
         // agregar metodo de pago
         public List<Bid> Bids { get; set; } = new List<Bid>();
+        // Nueva propiedad de navegación para ventas
+        public List<Sale> Sales { get; set; } = new List<Sale>();
     }
 }

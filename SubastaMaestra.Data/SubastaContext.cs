@@ -26,12 +26,12 @@ using SubastaMaestra.Entities.Enums;
 
                 modelBuilder.Entity<Sale>()
                     .HasOne(s => s.Product)
-                    .WithMany()
+                    .WithMany(p => p.Sales)
                     .HasForeignKey(s => s.ProductId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
-                modelBuilder.Entity<Product>()
+        modelBuilder.Entity<Product>()
                     .HasOne(p => p.Seller)
                     .WithMany()  // Si no hay una colección de productos en Usuario, deja WithMany() vacío
                     .HasForeignKey(p => p.SellerId)
