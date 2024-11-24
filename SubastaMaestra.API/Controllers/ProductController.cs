@@ -8,6 +8,7 @@ using SubastaMaestra.Models.DTOs.Product;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using SubastaMaestra.Models.Utils;
+using static System.Net.WebRequestMethods;
 
 namespace SubastaMaestra.API.Controllers
 {
@@ -33,13 +34,14 @@ namespace SubastaMaestra.API.Controllers
                 return BadRequest("Modelo invalido: " + ModelState);
             }
 
-            
-            if (!string.IsNullOrEmpty(productDTO.ImgUrl))
-            {
-                var imgUrl = await CreateImage(productDTO.ImgUrl);
-                productDTO.ImgUrl = imgUrl;
 
-            }
+            //if (!string.IsNullOrEmpty(productDTO.ImgUrl))
+            //{
+            //    var imgUrl = await CreateImage(productDTO.ImgUrl);
+            //    productDTO.ImgUrl = imgUrl;
+
+            //}
+            productDTO.ImgUrl = "https://res.cloudinary.com/gonza42742/image/upload/v1729728265/samples/cup-on-a-table.jpg";
             //var product = mapper.Map<Product>(productDTO);
             var result = await _productRepository.CreateProductAsync(productDTO);
             if (!result.Success)

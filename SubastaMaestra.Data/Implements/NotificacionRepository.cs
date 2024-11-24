@@ -31,7 +31,7 @@ namespace SubastaMaestra.Data.Implements
             notification.UserId = userId;
             notification.NotificationType = notificationType;
             notification.Created_at = DateTime.Now;
-            notification.State = true;
+            notification.State = false; // no vista
             var product = _subastaContext.Products.Where(p=>p.Id == productId).FirstOrDefault();
             switch (notificationType) // se rellena contenido texual
             {
@@ -70,7 +70,36 @@ namespace SubastaMaestra.Data.Implements
             }
 
         }
-        
+
+        public async Task<OperationResult<string>> MarkAsRead(int notifId)
+        {
+            // Buscar la notificación en la base de datos
+            var notification = await _subastaContext.Notifications .FirstOrDefaultAsync(n => n.Id == notifId);
+            if (notification == null)
+            {
+                return new OperationResult<string> { Success = false, Message = "No se encontró la notificación."};
+            }
+            try
+            {
+                // Actualizar el estado de la notificación
+                notification.State = true;
+
+                // Marcar la entidad como modificada (opcional en este caso porque EF detecta el cambio)
+                _subastaContext.Notifications.Update(notification);
+
+                // Guardar los cambios
+                await _subastaContext.SaveChangesAsync();
+
+                return new OperationResult<string> { Success = true,Message = "Notificación actualizada con éxito."};
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult<string>{  Success = false,Message = $"Error al actualizar la notificación: {ex.Message}"};
+            }
+        }
+
+
+
         public async Task<OperationResult<List<NotificationDTO>>> GetAllNotificationsByUserAsync(int userId)
         {
             try

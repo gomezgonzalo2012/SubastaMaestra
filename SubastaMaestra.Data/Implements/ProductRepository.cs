@@ -287,7 +287,7 @@ namespace SubastaMaestra.Data.Implements
                 {
                     return new OperationResult<int> { Success = false, Message = "El producto no existe" };
                 }
-                if (!producto.CategoryId.HasValue)
+                if (producto.AuctionId == null)
                 {
                     return new OperationResult<int> { Success = false, Message = "El producto no tiene subasta asignada" };
                 }

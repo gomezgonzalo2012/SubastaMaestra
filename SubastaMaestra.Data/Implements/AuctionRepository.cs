@@ -32,7 +32,32 @@ namespace SubastaMaestra.Data.Implements
         // Crear una nueva subasta
         public async Task<OperationResult<AuctionCreateDTO>> CreateAuctionAsync(AuctionCreateDTO auctionCreateDTO)
         {
-           
+            if (auctionCreateDTO.StartDate.AddMinutes(5) < DateTime.Now) // validacion de fecha de inicio < fecha actual
+            {
+                return new OperationResult<AuctionCreateDTO> { Success = false, Message = "La fecha de inicio no puede ser anterior a la fecha actual" };
+
+                
+               
+            }
+            if (auctionCreateDTO.FinishDate < DateTime.Now) // validacion fecha fin > fecha inicio
+            {
+                return new OperationResult<AuctionCreateDTO> { Success = false, Message = "La fecha de fin debe ser anterior a la fecha  actual." };
+            }
+            if (auctionCreateDTO.FinishDate <= auctionCreateDTO.StartDate) // validacion fecha fin > fecha inicio
+            {
+                return new OperationResult<AuctionCreateDTO> { Success = false, Message = "La fecha de fin debe ser posterior a la fecha de inicio." };
+                
+            }
+            if (auctionCreateDTO.StartDate.Date < DateTime.Now.AddDays(3))
+            {
+                return new OperationResult<AuctionCreateDTO> { Success = false, Message = "La subasta debe tener almenos 3 días de antelación para iniciar." };
+            }
+            var diff = auctionCreateDTO.FinishDate - auctionCreateDTO.StartDate;
+            if (diff < TimeSpan.FromDays(1))
+            {
+                return new OperationResult<AuctionCreateDTO> { Success = false, Message = "La subasta debe tener almenos 1 día de duración." };
+            }
+
             var auction = _mapper.Map<Auction>(auctionCreateDTO);
             auction.CurrentState = AuctionState.Pending;
             auction.StartDate= auctionCreateDTO.StartDate.Date.AddHours(0); // inicia a la 00:00
@@ -61,7 +86,11 @@ namespace SubastaMaestra.Data.Implements
                 {
                     return new OperationResult<int> { Success = false, Message = "Subasta no encontrada", Value = -1 };
                 }
+                if(subasta.StartDate> DateTime.Now.AddDays(1)) // solo activar subastas del dia actual
+                {
+                    return new OperationResult<int> { Success = false, Message = "Subasta con inicio futuro", Value = -1 };
 
+                }
                 subasta.CurrentState = AuctionState.Active;  
                 // desactivar productos
                 var op = await _context.SaveChangesAsync();
@@ -72,7 +101,7 @@ namespace SubastaMaestra.Data.Implements
             }
             catch (Exception ex)
             {
-                return new OperationResult<int> { Success = false, Message = "Error al cerrar la subasta.", Value = -1 };
+                return new OperationResult<int> { Success = false, Message = "Error al activar la subasta.", Value = -1 };
 
             }
         }
@@ -112,11 +141,39 @@ namespace SubastaMaestra.Data.Implements
 
             try
             {
+
                 var subastaExistente = await _context.Auctions.FindAsync(id);
+                
                 if (subastaExistente == null)
                 {
                     return new OperationResult<int> { Success = false, Message = "Subasta no encontrada.", Value = 0 };
                 }
+                if (subastaExistente.CurrentState == AuctionState.Closed)
+                {
+                    return new OperationResult<int> { Success = false, Message = "La subasta ya ha sido cerrada.", Value = 0 };
+                }
+                if (subasta.StartDate.AddMinutes(5) < DateTime.Now) // validacion de fecha de inicio < fecha actual
+                {
+                    return new OperationResult<int> { Success = false, Message = "La fecha de inicio no puede ser anterior a la fecha actual.", Value = 0 };
+                }
+                if (subasta.FinishDate < DateTime.Now) // validacion de fecha de inicio < fecha actual
+                {
+                    return new OperationResult<int> { Success = false, Message = "La fecha de cierre no puede ser anterior a la fecha actual.", Value = 0 };
+                }
+                if (subasta.FinishDate <= subasta.StartDate) // validacion fecha fin > fecha inicio
+                {
+                    return new OperationResult<int> { Success = false, Message = "La fecha de fin debe ser posterior a la fecha de inicio.", Value = 0 };
+                }
+                //if (subasta.StartDate.Date < DateTime.Now.AddDays(3))
+                //{
+                //    return new OperationResult<int> { Success = false, Message = "La subasta debe terner almenos 3 días de antelación para inciar.", Value = 0 };
+                //}
+                var diff = subasta.FinishDate - subasta.StartDate;
+                if (diff < TimeSpan.FromDays(1))
+                {
+                    return new OperationResult<int> { Success = false, Message = "La subasta debe terner almenos un día de duración", Value = 0 };                  
+                }
+
                 //auction.StartDate= auctionCreateDTO.StartDate.Date.AddHours(0);
 
                 _context.Entry(subastaExistente).CurrentValues.SetValues(subasta);

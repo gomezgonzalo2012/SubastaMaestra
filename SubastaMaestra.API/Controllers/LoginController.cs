@@ -52,7 +52,7 @@ namespace SubastaMaestra.API.Controllers
 
             var securityToken = new JwtSecurityToken( // genera token 
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(30),
+                    expires: DateTime.Now.AddMinutes(5),
                     signingCredentials: creds
                     );
 

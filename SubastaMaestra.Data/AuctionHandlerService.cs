@@ -57,27 +57,31 @@ namespace SubastaMaestra.Data
             {
                 foreach (var producto in products)
                 {
-
-                    // Determinar el ganador si el producto tiene ofertas
-                    var mejorOferta = await _dbContext.Bids
-                        .Where(o => o.ProductId == producto.Id)
-                        .OrderByDescending(o => o.Price)
-                        .FirstOrDefaultAsync();
-
-                    if (mejorOferta != null) // venta
+                    if (producto.CurrentState != ProductState.Sold)
                     {
-                        producto.BuyerId = mejorOferta.BidderId; // Asignar el ganador del producto
-                        producto.CurrentState = ProductState.Sold;
-                        producto.FinalPrice = mejorOferta.Price;
-                        await SaleProductAsync(mejorOferta);
+                        // Determinar el ganador si el producto tiene ofertas
+                        var mejorOferta = await _dbContext.Bids
+                            .Where(o => o.ProductId == producto.Id)
+                            .OrderByDescending(o => o.Price)
+                            .FirstOrDefaultAsync();
 
-                        await _notificationRepository.CreateNotification(producto.SellerId, producto.Id, NotificationType.SellerNotification);  // notif para vendedor
-                    }
-                    else
-                    {
-                        producto.CurrentState = ProductState.Disabled; 
+                        if (mejorOferta != null) // venta
+                        {
+                            producto.BuyerId = mejorOferta.BidderId; // Asignar el ganador del producto
+                            producto.CurrentState = ProductState.Sold;
+                            producto.FinalPrice = mejorOferta.Price;
+                            await SaleProductAsync(mejorOferta);
 
+                            await _notificationRepository.CreateNotification(producto.SellerId, producto.Id, NotificationType.SellerNotification);  // notif para vendedor
+                        }
+                        else
+                        {
+                            producto.CurrentState = ProductState.Disabled;
+
+                        }
                     }
+
+                    
                 }
 
             }

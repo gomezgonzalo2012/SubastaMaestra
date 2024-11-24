@@ -16,5 +16,6 @@ namespace SubastaMaestra.Data.Interfaces
         Task<OperationResult<bool>> CreateNotification(int userId, int productId, NotificationType notificationType);
         Task<OperationResult<List<NotificationDTO>>> GetAllNotificationsByUserAsync(int userId);
         Task<OperationResult<NotificationDTO>> GetNotificationById(int notifId);
+        Task<OperationResult<string>> MarkAsRead(int notifId);
     }
 }

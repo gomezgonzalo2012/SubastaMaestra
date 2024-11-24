@@ -114,7 +114,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     });
 }
 
-app.UseHttpsRedirection();// DESCOMENTAR ANTES DE PUBLICAR
+//app.UseHttpsRedirection();// DESCOMENTAR ANTES DE PUBLICAR
 app.UseCors("AllowAll");
 app.UseStaticFiles();
 
