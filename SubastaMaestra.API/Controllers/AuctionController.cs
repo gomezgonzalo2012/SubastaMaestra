@@ -29,13 +29,13 @@ namespace SubastaMaestra.API.Controllers
             var result = await _auctionRepository.CreateAuctionAsync(auctionDTO);
             if (result.Success)
             {
-                return Ok(result.Message);
+                return Ok(result);
 
             }
             return BadRequest(
                 new
                 {
-                    Message = result.Message,
+                    Message = result,
                     ErrorCode = "InvalidtDate"
                 }
             );
@@ -99,6 +99,7 @@ namespace SubastaMaestra.API.Controllers
             }
             return BadRequest(result);
         }
+
         [HttpPatch("activar/{id:int}")]
         public async Task<IActionResult> ActivateAuction( int id)
         {
@@ -109,6 +110,18 @@ namespace SubastaMaestra.API.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpPatch("deshabilitar/{id:int}")]
+        public async Task<IActionResult> DisableAuction(int id)
+        {
+            var result = await _auctionRepository.DisableAuctionAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpGet("masPopulares")]
         public async Task<IActionResult> GetMostPopularAucions(DateTime start, DateTime finish)
         {

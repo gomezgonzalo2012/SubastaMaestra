@@ -16,6 +16,7 @@ namespace SubastaMaestra.Data.Interfaces
         Task<OperationResult<AuctionCreateDTO>> CreateAuctionAsync(AuctionCreateDTO subasta);
         Task<OperationResult<int>> CloseAuctionAsync(int id_subasta);
         Task<OperationResult<int>> ActivateAuctionAsync(int idid_subasta);
+        Task<OperationResult<int>> DisableAuctionAsync(int id_subasta);
         Task<OperationResult<int>> EditAuctionAsync(AuctionUpdateDTO subasta, int id);
         Task<OperationResult<AuctionDTO>> GetAuctionByIdAsync(int id);
         Task<OperationResult<List<AuctionDTO>>> GetAllOpenAuctionAsync(); // eliminar

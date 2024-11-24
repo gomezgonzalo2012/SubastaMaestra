@@ -33,7 +33,12 @@ namespace SubastaMaestra.Models.Utils
             CreateMap<Auction,AuctionDTO>()
                 .ReverseMap();
             CreateMap<AuctionCreateDTO, Auction>();
-            CreateMap<AuctionSummaryDTO, Auction>().ReverseMap();
+
+            CreateMap<AuctionSummaryDTO, Auction>()
+            .ForMember(dest => dest.CurrentState, opt => opt.MapFrom(src => src.CurrentState))
+            .ReverseMap()
+            .ForMember(dest => dest.CurrentState, opt => opt.MapFrom(src => src.CurrentState));
+
             CreateMap<AuctionUpdateDTO, Auction>();
 
             CreateMap<User, UserDTO>().ReverseMap();

@@ -105,7 +105,30 @@ namespace SubastaMaestra.Data.Implements
 
             }
         }
+        public async Task<OperationResult<int>> DisableAuctionAsync(int id_subasta)
+        {
 
+            try
+            {
+                var subasta = await _context.Auctions.FindAsync(id_subasta);
+                if (subasta == null)
+                {
+                    return new OperationResult<int> { Success = false, Message = "Subasta no encontrada", Value = -1 };
+                }
+
+                subasta.CurrentState = AuctionState.Canceled;  // 2 = cerrada o deshabilitada
+                var op = await _context.SaveChangesAsync();
+
+                return new OperationResult<int> { Success = true, Message = "Subasta deshabilitada correctamente", Value = 1 };
+
+
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult<int> { Success = false, Message = "Error al cerrar la subasta.", Value = -1 };
+
+            }
+        }
         // Cerrar una subasta (actualizar su estado)
         public async Task<OperationResult<int>> CloseAuctionAsync(int id_subasta)
         {
@@ -133,6 +156,7 @@ namespace SubastaMaestra.Data.Implements
 
             }
         }
+        
 
         // Modificar una subasta existente
         public async Task<OperationResult<int>> EditAuctionAsync(AuctionUpdateDTO subasta,int id)
