@@ -26,6 +26,7 @@ namespace SubastaMaestra.Models.DTOs.Product
         public int NumberOfOffers { get; set; }
         public int CategoryId { get; set; }
         public int SellerId { get; set; }
+        public ProductCategory? Category { get; set; }
         public String? SellerName { get; set; }
         public int BuyerId { get; set; }
         public String? BuyerName { get; set; }
